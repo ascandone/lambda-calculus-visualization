@@ -32,9 +32,10 @@ export const BetaReducibleTerm: FC<{ children: ReactNode; color?: Color }> = ({
     <button className="inline-flex flex-col cursor-pointer">
       <pre
         className={`
-          whitespace-pre text-5xl text-zinc-800 hoverable-snippet
-          rounded-xl pb-1.5 mb-1.5 w-full hoverable-snippet
-          ${coloring}
+            whitespace-pre text-5xl text-zinc-800 hoverable-snippet
+            rounded-xl pb-1.5 mb-1.5 w-full
+            transitition-colors duration-100 ease-in-out
+            ${coloring}
         `}
       >
         {children}

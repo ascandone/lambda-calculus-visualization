@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.hoverable-snippet__blue {
+    --hover-color: theme("colors.blue.100")
+}
+
+.hoverable-snippet__red {
+    --hover-color: theme("colors.red.100")
+}
+
+.hoverable-snippet__lime {
+    --hover-color: theme("colors.lime.100")
+}
+
+.hoverable-snippet__fuchsia {
+    --hover-color: theme("colors.fuchsia.100")
+}
+
+.hoverable-snippet__indigo {
+    --hover-color: theme("colors.indigo.100")
+}
+
+.hoverable-snippet__emerald {
+    --hover-color: theme("colors.emerald.100")
+}
+
+.hoverable-snippet__violet {
+    --hover-color: theme("colors.violet.100")
+}
+
+.hoverable-snippet:hover:not(:has(.hoverable-snippet:hover)) {
+    background-color: var(--hover-color);
+}

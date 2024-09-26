@@ -25,13 +25,14 @@ export const BetaReducibleTerm: FC<{ children: ReactNode; color?: Color }> = ({
   children,
   color,
 }) => {
-  const coloring = color === undefined ? "" : `border-b-4  ${getColors(color)}`;
+  const coloring =
+    color === undefined ? "" : `border-b-4 cursor-pointer ${getColors(color)}`;
 
   return (
-    <button onClick={() => {}} className="inline-flex flex-col cursor-pointer">
+    <button className="inline-flex flex-col cursor-pointer">
       <pre
         className={`
-          inline whitespace-pre text-5xl text-zinc-800 hoverable-snippet cursor-pointer
+          whitespace-pre text-5xl text-zinc-800 hoverable-snippet
           rounded-xl pb-1.5 mb-1.5 w-full hoverable-snippet
           ${coloring}
         `}

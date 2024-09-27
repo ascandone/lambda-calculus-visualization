@@ -19,7 +19,7 @@ function substitute(
     case "lambda":
       return {
         type: "lambda",
-        bindings: body.bindings,
+        binding: body.binding,
         body: substitute(binding, arg, body.body),
       };
   }
@@ -29,14 +29,5 @@ export function performReduction(
   f: LambdaExpr & { type: "lambda" },
   arg: LambdaExpr,
 ): LambdaExpr {
-  if (f.bindings.length === 0) {
-    throw new Error("[unrechable] no bindings");
-  }
-
-  if (f.bindings.length > 1) {
-    throw new Error("TODO many bindings");
-  }
-
-  const binding = f.bindings[0];
-  return substitute(binding, arg, f.body);
+  return substitute(f.binding, arg, f.body);
 }

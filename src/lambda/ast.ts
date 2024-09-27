@@ -10,6 +10,6 @@ export type LambdaExpr =
     }
   | {
       type: "lambda";
-      bindings: string[];
+      binding: string;
       body: LambdaExpr;
     };

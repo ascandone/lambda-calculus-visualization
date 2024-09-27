@@ -7,11 +7,11 @@ const chainBindings = (
   expr: LambdaExpr & { type: "lambda" },
 ): [bindings: string[], body: LambdaExpr] => {
   if (expr.body.type !== "lambda") {
-    return [expr.bindings, expr.body];
+    return [[expr.binding], expr.body];
   }
 
   const [bindings, body] = chainBindings(expr.body);
-  return [expr.bindings.concat(bindings), body];
+  return [[expr.binding, ...bindings], body];
 };
 
 export const LambdaTerm: FC<{ expr: LambdaExpr }> = ({ expr }) => {

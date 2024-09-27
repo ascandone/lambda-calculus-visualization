@@ -7,11 +7,14 @@ const semantics = grammar.createSemantics();
 
 semantics.addOperation<LambdaExpr>("expr()", {
   Exp_abs(_fn, params, _arrow, body): LambdaExpr {
-    return {
-      type: "lambda",
-      bindings: params.children.map((p) => p.sourceString),
-      body: body.expr(),
-    };
+    return params.children.reduceRight(
+      (prev, param): LambdaExpr => ({
+        type: "lambda",
+        binding: param!.sourceString,
+        body: prev,
+      }),
+      body.expr(),
+    );
   },
 
   Appl_appl(f, x): LambdaExpr {

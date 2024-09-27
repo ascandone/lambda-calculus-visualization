@@ -33,7 +33,7 @@ test("lambda", () => {
     ok: true,
     value: {
       type: "lambda",
-      bindings: ["x"],
+      binding: "x",
       body: {
         type: "var",
         name: "x",
@@ -49,7 +49,7 @@ test("lambda with greek char", () => {
     ok: true,
     value: {
       type: "lambda",
-      bindings: ["x"],
+      binding: "x",
       body: {
         type: "var",
         name: "x",
@@ -136,13 +136,9 @@ test("nested lambda prec", () => {
 
   expect(parsed).toMatchInlineSnapshot(`
     {
-      "bindings": [
-        "x",
-      ],
+      "binding": "x",
       "body": {
-        "bindings": [
-          "y",
-        ],
+        "binding": "y",
         "body": {
           "name": "x",
           "type": "var",
@@ -159,13 +155,14 @@ test("nested lambda sugar", () => {
 
   expect(parsed).toMatchInlineSnapshot(`
     {
-      "bindings": [
-        "x",
-        "y",
-      ],
+      "binding": "x",
       "body": {
-        "name": "x",
-        "type": "var",
+        "binding": "y",
+        "body": {
+          "name": "x",
+          "type": "var",
+        },
+        "type": "lambda",
       },
       "type": "lambda",
     }
@@ -178,9 +175,7 @@ test("iif", () => {
   expect(parsed).toMatchInlineSnapshot(`
     {
       "f": {
-        "bindings": [
-          "x",
-        ],
+        "binding": "x",
         "body": {
           "name": "x",
           "type": "var",
@@ -189,9 +184,7 @@ test("iif", () => {
       },
       "type": "appl",
       "x": {
-        "bindings": [
-          "y",
-        ],
+        "binding": "y",
         "body": {
           "name": "y",
           "type": "var",

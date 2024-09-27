@@ -20,6 +20,7 @@ import {
 } from "./ReducibleTerm";
 import {
   autoreduce,
+  canonicalize,
   containsBoundAliases,
   performReduction,
   unalias,
@@ -244,9 +245,10 @@ export const Program: FC<{ program: ProgramT }> = ({ program }) => {
     setTerms([...previous, [freshId(), term], [freshId(), substitutedTerm]]);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  function handleCanonicalize(_index: number) {
-    alert("Not yet implemented");
+  function handleCanonicalize(index: number, term: LambdaExpr) {
+    const previous = terms.slice(0, index);
+    const canonical = canonicalize(term);
+    setTerms([...previous, [freshId(), canonical]]);
   }
 
   function handleFastForward(index: number, term: LambdaExpr) {
@@ -294,8 +296,8 @@ export const Program: FC<{ program: ProgramT }> = ({ program }) => {
                 >
                   Substitute all aliases
                 </MenuItem>
-                <MenuItem onClick={() => handleCanonicalize(index)}>
-                  Canonicalize
+                <MenuItem onClick={() => handleCanonicalize(index, term)}>
+                  Simplify bindings
                 </MenuItem>
                 <MenuItem onClick={() => handleFastForward(index, term)}>
                   Fast forward

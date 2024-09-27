@@ -1,12 +1,47 @@
 import { describe, expect, test } from "vitest";
 import {
   autoreduce,
+  canonicalize,
   containsBoundAliases,
+  idToChar,
+  isFree,
   performReduction,
   unalias,
 } from "./semantics";
 import { unsafeParse } from "./parser";
 import { LambdaExpr } from "./ast";
+
+describe("isFree", () => {
+  test("var", () => {
+    const out = isFree("a", unsafeParse(String.raw`a`).expr);
+    expect(out).toBe(true);
+  });
+
+  test("free var in lambda", () => {
+    const out = isFree("a", unsafeParse(String.raw`\x. a`).expr);
+    expect(out).toBe(true);
+  });
+
+  test("bound var in lambda", () => {
+    const out = isFree("a", unsafeParse(String.raw`\a. a`).expr);
+    expect(out).toBe(false);
+  });
+
+  test("in appl (left)", () => {
+    const out = isFree("a", unsafeParse(String.raw`\u . a u`).expr);
+    expect(out).toBe(true);
+  });
+
+  test("in appl (right)", () => {
+    const out = isFree("a", unsafeParse(String.raw`\u . u a`).expr);
+    expect(out).toBe(true);
+  });
+
+  test("in appl (not found)", () => {
+    const out = isFree("a", unsafeParse(String.raw`x y`).expr);
+    expect(out).toBe(false);
+  });
+});
 
 describe("reductions", () => {
   test("simple case", () => {
@@ -104,5 +139,42 @@ describe("aliases substitution", () => {
     const program = unsafeParse(String.raw`let A = a in \e . f U`);
 
     expect(containsBoundAliases(program.aliases, program.expr)).toBe(false);
+  });
+});
+
+describe("canonicalize", () => {
+  test("id to char", () => {
+    expect(idToChar(0)).toEqual("a");
+    expect(idToChar(1)).toEqual("b");
+    expect(idToChar(25)).toEqual("z");
+
+    expect(idToChar(26)).toEqual("a'");
+    expect(idToChar(27)).toEqual("b'");
+
+    expect(idToChar(26 + 26)).toEqual("a''");
+  });
+
+  test("unary", () => {
+    const program = unsafeParse(String.raw`\ x . x x`);
+
+    expect(canonicalize(program.expr)).toEqual<LambdaExpr>(
+      unsafeParse(String.raw`\ a . a a`).expr,
+    );
+  });
+
+  test("when no fresh binding appears as free", () => {
+    const program = unsafeParse(String.raw`\ x y z . y x x`);
+
+    expect(canonicalize(program.expr)).toEqual<LambdaExpr>(
+      unsafeParse(String.raw`\ a b c . b a a`).expr,
+    );
+  });
+
+  test("when fresh bindings are already used", () => {
+    const program = unsafeParse(String.raw`\ x. x a b x`);
+
+    expect(canonicalize(program.expr)).toEqual<LambdaExpr>(
+      unsafeParse(String.raw`\ c . c a b c`).expr,
+    );
   });
 });

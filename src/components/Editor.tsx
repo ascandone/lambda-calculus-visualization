@@ -10,13 +10,26 @@ export type EditorProps = {
 const RunBtn: FC<{ onClick: VoidFunction }> = ({ onClick }) => (
   <button
     onClick={onClick}
-    className="bg-zinc-800 text-white rounded-lg w-64 py-2 text-lg shadow-xl"
+    className="bg-zinc-800 text-white rounded-lg w-64 py-2 text-lg shadow-xl hover:bg-zinc-950 transition-colors duration-75"
   >
     Evaluate
   </button>
 );
 
-const DEFAULT_VALUE = String.raw`(\x. x x) (\x. x x)`;
+const DEFAULT_VALUE = String.raw`// Press cmd-Enter or ctrl-Enter to evaluate
+
+// variables are written with lowercase chars
+// lambda are written using the "\binding.body" syntax
+// you can use the "\x y.body" syntax as a sugar for "\x.\y.body"
+
+// You can define top-level (non recursive) aliases using uppercase identifiers
+// be sure the alias ends with the "in" keyword
+let S x y z = x y z in // "let C x = y" is sugar for "let C = \x.y"
+let K u v = u in
+
+// here's the term we are going to evaluate
+S (K S) K
+`;
 
 const EVENT_RUN = "RUN_EDITOR";
 
@@ -28,6 +41,8 @@ export const Editor: FC<EditorProps> = ({ onSubmitTerm }) => {
 
     if (parsed.ok) {
       onSubmitTerm(parsed.value);
+    } else {
+      alert("Error: " + parsed.matchResult.message);
     }
   }, [onSubmitTerm, value]);
 
@@ -43,15 +58,6 @@ export const Editor: FC<EditorProps> = ({ onSubmitTerm }) => {
       <div className="px-4 py-4 fixed bottom-4 right-4 z-10">
         <RunBtn onClick={evaluateTerm} />
       </div>
-
-      {/* <div className="px-12 py-5 text-slate-600">
-        <p>
-          Cmd-k to run. Lorem ipsum, dolor sit amet consectetur adipisicing
-          elit. Reprehenderit molestias dignissimos natus aut laboriosam eum
-          neque animi deleniti! Exercitationem mollitia, suscipit odit placeat
-          laudantium molestiae nesciunt sed amet quasi eligendi!
-        </p>
-      </div> */}
 
       <MonacoEditor
         language="fsharp"

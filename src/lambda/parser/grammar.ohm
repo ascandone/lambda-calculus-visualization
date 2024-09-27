@@ -1,0 +1,28 @@
+Expr {
+  MAIN
+    = Appl -- expr
+
+  Appl
+    = Appl Exp -- appl
+    | Exp
+
+  Exp
+    = "(" Appl ")"  -- paren
+    | "\\" ident+ "." Appl -- abs
+    | ident
+
+  ident  (an identifier)
+    = identHead identBody*
+
+  identHead
+    = letter
+    | "_"
+  
+  identBody
+    = alnum
+    | "_"
+  
+
+  number  (a number)
+    = digit+
+}

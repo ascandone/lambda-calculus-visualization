@@ -29,7 +29,24 @@ const useRouter = () => {
   };
 };
 
+const DEFAULT_VALUE = String.raw`// Press cmd-Enter or ctrl-Enter to evaluate
+
+// variables are written with lowercase chars
+// lambda are written using the "\binding.body" syntax
+// you can use the "\x y.body" syntax as a sugar for "\x.\y.body"
+
+// You can define top-level (non recursive) aliases using uppercase identifiers
+// be sure the alias ends with the "in" keyword
+let S x y z = x z (y z) in // "let C x = y" is sugar for "let C = \x.y"
+let K u v = u in
+let I t = t in
+
+// here's the term we are going to evaluate
+S (K S) K
+`;
+
 const App: FC = () => {
+  const [value, setValue] = useState(DEFAULT_VALUE);
   const [program, setProgram] = useState<Program | undefined>(undefined);
 
   const router = useRouter();
@@ -59,7 +76,9 @@ const App: FC = () => {
       );
 
     default:
-      return <Editor onSubmit={handleSubmit} />;
+      return (
+        <Editor onSubmit={handleSubmit} value={value} setValue={setValue} />
+      );
   }
 };
 

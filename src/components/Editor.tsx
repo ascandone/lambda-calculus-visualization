@@ -1,9 +1,11 @@
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useCallback, useEffect } from "react";
 import MonacoEditor from "@monaco-editor/react";
 import { parse } from "../lambda/parser";
 import { Program } from "../lambda/ast";
 
 export type EditorProps = {
+  value: string;
+  setValue: (value: string) => void;
   onSubmit: (term: Program) => void;
 };
 
@@ -16,27 +18,13 @@ const RunBtn: FC<{ onClick: VoidFunction }> = ({ onClick }) => (
   </button>
 );
 
-const DEFAULT_VALUE = String.raw`// Press cmd-Enter or ctrl-Enter to evaluate
-
-// variables are written with lowercase chars
-// lambda are written using the "\binding.body" syntax
-// you can use the "\x y.body" syntax as a sugar for "\x.\y.body"
-
-// You can define top-level (non recursive) aliases using uppercase identifiers
-// be sure the alias ends with the "in" keyword
-let S x y z = x z (y z) in // "let C x = y" is sugar for "let C = \x.y"
-let K u v = u in
-let I t = t in
-
-// here's the term we are going to evaluate
-S (K S) K
-`;
-
 const EVENT_RUN = "RUN_EDITOR";
 
-export const Editor: FC<EditorProps> = ({ onSubmit: onSubmitTerm }) => {
-  const [value, setValue] = useState(DEFAULT_VALUE);
-
+export const Editor: FC<EditorProps> = ({
+  onSubmit: onSubmitTerm,
+  value,
+  setValue,
+}) => {
   const evaluateTerm = useCallback(() => {
     const parsed = parse(value);
 
@@ -64,7 +52,7 @@ export const Editor: FC<EditorProps> = ({ onSubmit: onSubmitTerm }) => {
         language="fsharp"
         className="h-full p-4"
         height="100%"
-        defaultValue={DEFAULT_VALUE}
+        defaultValue={value}
         onChange={(e) => setValue(e ?? "")}
         onMount={(editor, monaco) => {
           editor.addCommand(

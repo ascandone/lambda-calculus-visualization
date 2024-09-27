@@ -111,7 +111,7 @@ export const Program: FC<{ program: ProgramT }> = ({ program }) => {
 
   return (
     <AliasesContext.Provider value={program.aliases}>
-      <div className="flex flex-col gap-y-12">
+      <div className="flex flex-col gap-y-14">
         {terms.map((term, index) => (
           <Pre key={index}>
             <LambdaTerm

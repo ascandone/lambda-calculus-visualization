@@ -18,6 +18,33 @@ const chainBindings = (
   return [[expr.binding, ...bindings], body];
 };
 
+function counTrailingQuotes(name: string) {
+  let trailingQuotes = 0;
+  for (let i = name.length - 1; i >= 0; i--) {
+    if (name[i] === "'") {
+      trailingQuotes++;
+    } else {
+      break;
+    }
+  }
+  return trailingQuotes;
+}
+
+function handleSup(name: string) {
+  const trailingQuotes = counTrailingQuotes(name);
+
+  if (trailingQuotes === 0) {
+    return name;
+  } else {
+    return (
+      <>
+        {name.replace(/'/g, "")}
+        <sup>{trailingQuotes}</sup>
+      </>
+    );
+  }
+}
+
 export const LambdaTerm: FC<{
   expr: LambdaExpr;
   onReduction: (e: LambdaExpr) => void;
@@ -36,11 +63,15 @@ export const LambdaTerm: FC<{
 
   switch (expr.type) {
     case "var":
-      return expr.name;
+      return handleSup(expr.name);
 
     case "lambda": {
       const [bindings, body] = chainBindings(expr);
-      const bindingsJ = bindings.join(" ");
+      const bindingsJ = bindings.map(handleSup).reduce((prev, curr) => (
+        <>
+          {prev} {curr}
+        </>
+      ));
       const bodyT = (
         <LambdaTerm
           expr={body}

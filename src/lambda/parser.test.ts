@@ -260,3 +260,22 @@ let A a b = x in y
     },
   });
 });
+
+test("aliases usage", () => {
+  const parsed = unsafeParse(`
+let A = a in A
+`);
+
+  expect(parsed).toEqual<Program>({
+    aliases: [
+      {
+        name: "A",
+        value: { type: "var", name: "a" },
+      },
+    ],
+    expr: {
+      type: "var",
+      name: "A",
+    },
+  });
+});

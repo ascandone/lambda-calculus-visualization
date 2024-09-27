@@ -35,6 +35,13 @@ semantics.addOperation<LambdaExpr>("expr()", {
       name: this.sourceString,
     };
   },
+
+  aliasIdent(_l, _ns): LambdaExpr {
+    return {
+      type: "var",
+      name: this.sourceString,
+    };
+  },
 });
 
 semantics.addOperation<AliasDefinition>("alias()", {

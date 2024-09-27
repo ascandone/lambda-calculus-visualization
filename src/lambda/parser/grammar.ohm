@@ -14,6 +14,7 @@ Expr {
     = "(" Appl ")"  -- paren
     | ("\\" | "λ") ident+ "." Appl -- abs
     | ident
+    | aliasIdent
 
   ident  (an identifier)
     = (~keyword) identHead identBody*

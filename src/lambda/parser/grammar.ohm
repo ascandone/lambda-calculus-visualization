@@ -1,6 +1,10 @@
 Expr {
   MAIN
-    = Appl
+    = AliasDecl* Appl
+
+  keyword = "in" | "let"
+
+  AliasDecl = "let" aliasIdent "=" Appl "in"
 
   Appl
     = Appl Exp -- appl
@@ -12,16 +16,18 @@ Expr {
     | ident
 
   ident  (an identifier)
-    = identHead identBody*
+    = (~keyword) identHead identBody*
 
   identHead
-    = letter
+    = lower
     | "_"
   
   identBody
     = alnum
     | "_"
   
+  aliasIdent
+    = upper identBody*
 
   number  (a number)
     = digit+

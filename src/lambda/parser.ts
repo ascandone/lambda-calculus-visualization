@@ -37,10 +37,20 @@ semantics.addOperation<LambdaExpr>("expr()", {
   },
 });
 
-semantics.addOperation<Program>("parse()", {
-  MAIN(a) {
+semantics.addOperation<AliasDefinition>("alias()", {
+  AliasDecl(_let, ident, _eq, appl, _in): AliasDefinition {
     return {
-      expr: a.expr(),
+      name: ident.sourceString,
+      value: appl.expr(),
+    };
+  },
+});
+
+semantics.addOperation<Program>("parse()", {
+  MAIN(aliases, e): Program {
+    return {
+      aliases: aliases.children.map((e) => e.alias()),
+      expr: e.expr(),
     };
   },
 });
@@ -49,7 +59,12 @@ export type ParseResult<T> =
   | { ok: true; value: T }
   | { ok: false; matchResult: MatchResult };
 
+export type AliasDefinition = {
+  name: string;
+  value: LambdaExpr;
+};
 export type Program = {
+  aliases: AliasDefinition[];
   expr: LambdaExpr;
 };
 

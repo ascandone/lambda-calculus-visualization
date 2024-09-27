@@ -5,6 +5,7 @@ test("var", () => {
   const parsed = unsafeParse("x");
 
   expect(parsed).toEqual<Program>({
+    aliases: [],
     expr: {
       type: "var",
       name: "x",
@@ -20,6 +21,7 @@ x
 `);
 
   expect(parsed).toEqual<Program>({
+    aliases: [],
     expr: {
       type: "var",
       name: "x",
@@ -31,6 +33,7 @@ test("parens", () => {
   const parsed = unsafeParse("(x)");
 
   expect(parsed).toEqual<Program>({
+    aliases: [],
     expr: {
       type: "var",
       name: "x",
@@ -42,6 +45,7 @@ test("lambda", () => {
   const parsed = unsafeParse(String.raw`\x.x`);
 
   expect(parsed).toEqual<Program>({
+    aliases: [],
     expr: {
       type: "lambda",
       binding: "x",
@@ -57,6 +61,7 @@ test("lambda with greek char", () => {
   const parsed = unsafeParse(String.raw`λx.x`);
 
   expect(parsed).toEqual<Program>({
+    aliases: [],
     expr: {
       type: "lambda",
       binding: "x",
@@ -72,6 +77,7 @@ test("application", () => {
   const parsed = unsafeParse(`x y`);
 
   expect(parsed).toEqual<Program>({
+    aliases: [],
     expr: {
       type: "appl",
       f: {
@@ -204,4 +210,26 @@ test("iif", () => {
       },
     }
   `);
+});
+
+test("aliases", () => {
+  const parsed = unsafeParse(`
+let A = x in y
+`);
+
+  expect(parsed).toEqual<Program>({
+    aliases: [
+      {
+        name: "A",
+        value: {
+          type: "var",
+          name: "x",
+        },
+      },
+    ],
+    expr: {
+      type: "var",
+      name: "y",
+    },
+  });
 });

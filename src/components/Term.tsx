@@ -82,7 +82,7 @@ export const LambdaTerm: FC<{
     case "var": {
       const isAlias = /[A-Z]/.test(expr.name[0]);
 
-      if (!isAlias) {
+      if (!isAlias || aliases.every((a) => a.name !== expr.name)) {
         return handleSup(expr.name);
       }
 

@@ -62,6 +62,12 @@ describe("reductions", () => {
     expect(out).toEqual(unsafeParse(String.raw`\y.t`).expr);
   });
 
+  test("shadowing", () => {
+    const out = reductionStep(String.raw`(\x x.x) a`);
+
+    expect(out).toEqual(unsafeParse(String.raw`\x.x`).expr);
+  });
+
   test("capturing", () => {
     const out = reductionStep(String.raw`(\ x t . t x) t`);
 

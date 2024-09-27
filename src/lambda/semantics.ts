@@ -17,6 +17,11 @@ function substitute(
       };
 
     case "lambda": {
+      // this is needed to handle shadowing
+      if (expr.binding === binding) {
+        return expr;
+      }
+
       if (!isFree(expr.binding, with_)) {
         return {
           type: "lambda",

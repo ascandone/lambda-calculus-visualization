@@ -19,6 +19,7 @@ import {
   SelectionState,
 } from "./ReducibleTerm";
 import { performReduction, unalias } from "../lambda/semantics";
+import { MenuButton, MenuItem } from "./MenuButton";
 
 export const AliasesContext = createContext<AliasDefinition[]>([]);
 
@@ -233,19 +234,30 @@ export const Program: FC<{ program: ProgramT }> = ({ program }) => {
     <AliasesContext.Provider value={program.aliases}>
       <div className="flex flex-col gap-y-14">
         {terms.map(([id, term], index) => (
-          <Appear key={id} immediate={index === 0}>
-            <Pre>
-              <LambdaTerm
-                expr={term}
-                onReduction={(newExpr) => {
-                  setTerms([
-                    ...terms.slice(0, index + 1),
-                    [freshId(), newExpr],
-                  ]);
-                }}
-              />
-            </Pre>
-          </Appear>
+          <div key={id} className="flex items-start gap-x-6">
+            <div className="my-2">
+              <MenuButton>
+                <MenuItem onClick={() => {}}>Substitute all aliases</MenuItem>
+                <MenuItem onClick={() => {}}>Canonicalize</MenuItem>
+                <MenuItem onClick={() => {}}>Fast forward</MenuItem>
+                <MenuItem onClick={() => {}}>Delete step</MenuItem>
+              </MenuButton>
+            </div>
+
+            <Appear immediate={index === 0}>
+              <Pre>
+                <LambdaTerm
+                  expr={term}
+                  onReduction={(newExpr) => {
+                    setTerms([
+                      ...terms.slice(0, index + 1),
+                      [freshId(), newExpr],
+                    ]);
+                  }}
+                />
+              </Pre>
+            </Appear>
+          </div>
         ))}
       </div>
     </AliasesContext.Provider>

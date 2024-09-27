@@ -43,7 +43,7 @@ export const Pre: FC<{ children: ReactNode }> = ({ children }) => {
 
   return (
     <GlobalSelectionContext.Provider value={[selected, setSelected]}>
-      <pre className="whitespace-pre-wrap text-5xl text-zinc-800">
+      <pre className="whitespace-pre-wrap text-4xl text-zinc-800">
         {children}
       </pre>
     </GlobalSelectionContext.Provider>

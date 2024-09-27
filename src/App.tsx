@@ -69,7 +69,7 @@ const App: FC = () => {
 
       return (
         <div className="px-4 mx-auto w-full">
-          <div className="mx-auto max-w-screen-xl px-4 py-32">
+          <div className="mx-auto max-w-screen-2xl px-2 py-32">
             <Program program={program} />
           </div>
         </div>

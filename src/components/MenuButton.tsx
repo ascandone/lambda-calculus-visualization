@@ -31,11 +31,23 @@ export const MenuButton: FC<MenuButtonProps> = ({ children }) => (
   </DropdownMenu.Root>
 );
 
+export type MenuItemVariant = "default" | "danger";
+
+function variantToCls(variant: MenuItemVariant): string {
+  switch (variant) {
+    case "default":
+      return "data-[highlighted]:bg-zinc-100";
+
+    case "danger":
+      return "data-[highlighted]:bg-red-100";
+  }
+}
 export const MenuItem: FC<{
   children: ReactNode;
   onClick: VoidFunction;
   disabled?: boolean;
-}> = ({ children, onClick, disabled }) => (
+  variant?: MenuItemVariant;
+}> = ({ children, onClick, disabled, variant = "default" }) => (
   <DropdownMenu.Item
     disabled={disabled}
     onClick={onClick}
@@ -44,7 +56,7 @@ export const MenuItem: FC<{
         flex items-center h-10 relative px-4
         select-none outline-none
         data-[disabled]:text-zinc-400 data-[disabled]:pointer-events-none
-        data-[highlighted]:bg-zinc-100
+        ${variantToCls(variant)}
     `}
   >
     {children}

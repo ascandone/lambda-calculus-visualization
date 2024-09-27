@@ -276,6 +276,7 @@ export const Program: FC<{ program: ProgramT }> = ({ program }) => {
                   Fast forward
                 </MenuItem>
                 <MenuItem
+                  variant="danger"
                   disabled={index === 0}
                   onClick={() => handleDelete(index)}
                 >

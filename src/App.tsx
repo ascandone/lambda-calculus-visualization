@@ -1,51 +1,19 @@
 import { FC, useState } from "react";
-import { unsafeParse } from "./lambda/parser";
-import { LambdaTerm } from "./components/Term";
-import { BetaReducibleTerm, Pre } from "./components/ReducibleTerm";
+import { BetaReducibleTerm, TermsList } from "./components/ReducibleTerm";
+import { LambdaExpr } from "./lambda/ast";
+import { Editor } from "./components/Editor";
 
-const s = String.raw`(\x y z. x z (y z))`;
-const k = String.raw`(\u v. u)`;
-// const i = String.raw`(\t . t)`;
-const comb = String.raw`(${s} (${k} ${s})) ${k}`;
+const App: FC = () => {
+  const [term, setTerm] = useState<LambdaExpr | undefined>(undefined);
 
-const App: FC = () => (
-  <div className="px-4 mx-auto w-full h-screen bg-gray-50">
-    <div className="mx-auto flex justify-center py-32">
-      <RenderTermList src={comb} />
-      {/* <RenderTermList src={String.raw`(\x y. (\a.a) b)`} /> */}
+  return term === undefined ? (
+    <Editor onSubmitTerm={setTerm} />
+  ) : (
+    <div className="px-4 mx-auto w-full">
+      <div className="mx-auto flex justify-center py-32">
+        <TermsList term={term} />
+      </div>
     </div>
-  </div>
-);
-
-export const RenderTermList: FC<{ src: string }> = ({ src }) => {
-  const [terms, setTerms] = useState(() => [unsafeParse(src)]);
-
-  return (
-    <div className="flex flex-col gap-y-12">
-      {terms.map((term, index) => (
-        <Pre key={index}>
-          <LambdaTerm
-            expr={term}
-            onReduction={(newExpr) => {
-              setTerms([...terms.slice(0, index + 1), newExpr]);
-            }}
-          />
-        </Pre>
-      ))}
-    </div>
-  );
-};
-
-export const RenderTerm: FC<{ src: string }> = ({ src }) => {
-  const [term, setTerm] = useState(() => unsafeParse(src));
-
-  return (
-    <LambdaTerm
-      expr={term}
-      onReduction={(newExpr) => {
-        setTerm(newExpr);
-      }}
-    />
   );
 };
 

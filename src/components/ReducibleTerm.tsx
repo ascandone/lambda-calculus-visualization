@@ -1,5 +1,7 @@
 import classNames from "classnames";
 import { createContext, FC, ReactNode, useContext, useState } from "react";
+import { LambdaExpr } from "../lambda/ast";
+import { LambdaTerm } from "./Term";
 
 const colors = ["blue", "emerald", "fuchsia", "lime"] as const;
 export type Color = (typeof colors)[number];
@@ -11,8 +13,6 @@ export const GlobalSelectionContext = createContext<
 >([undefined, () => {}]);
 
 function getColors(color: Color, selectionState: SelectionState): string {
-  console.log("SEL STATE", selectionState, "FOR", color);
-
   switch (color) {
     case "blue":
       return classNames("hoverable-snippet__blue border-blue-400", {
@@ -103,5 +103,24 @@ export const BetaReducibleTerm: FC<{
         </ColorIdContext.Provider>
       </span>
     </span>
+  );
+};
+
+export const TermsList: FC<{ term: LambdaExpr }> = ({ term }) => {
+  const [terms, setTerms] = useState([term]);
+
+  return (
+    <div className="flex flex-col gap-y-12">
+      {terms.map((term, index) => (
+        <Pre key={index}>
+          <LambdaTerm
+            expr={term}
+            onReduction={(newExpr) => {
+              setTerms([...terms.slice(0, index + 1), newExpr]);
+            }}
+          />
+        </Pre>
+      ))}
+    </div>
   );
 };

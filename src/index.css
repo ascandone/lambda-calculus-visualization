@@ -3,23 +3,23 @@
 @tailwind utilities;
 
 .hoverable-snippet__blue {
-    --hover-color: theme("colors.blue.200");
-    --hover-border-color: theme("colors.blue.500");
+    --hover-color: theme("colors.blue.800");
+    --hover-border-color: theme("colors.blue.300");
 }
 
 .hoverable-snippet__amber {
-    --hover-color: theme("colors.amber.200");
-    --hover-border-color: theme("colors.amber.500");
+    --hover-color: theme("colors.amber.800");
+    --hover-border-color: theme("colors.amber.300");
 }
 
 .hoverable-snippet__fuchsia {
-    --hover-color: theme("colors.fuchsia.200");
-    --hover-border-color: theme("colors.fuchsia.500");
+    --hover-color: theme("colors.fuchsia.800");
+    --hover-border-color: theme("colors.fuchsia.300");
 }
 
 .hoverable-snippet__emerald {
-    --hover-color: theme("colors.emerald.200");
-    --hover-border-color: theme("colors.emerald.500");
+    --hover-color: theme("colors.emerald.800");
+    --hover-border-color: theme("colors.emerald.300");
 }
 
 

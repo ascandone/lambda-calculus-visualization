@@ -12,7 +12,7 @@ export type EditorProps = {
 const RunBtn: FC<{ onClick: VoidFunction }> = ({ onClick }) => (
   <button
     onClick={onClick}
-    className="bg-zinc-800 text-white rounded-lg w-64 py-2 text-lg shadow-xl hover:bg-zinc-950 transition-colors duration-75"
+    className="bg-zinc-100 text-zinc-900 rounded-lg w-64 py-2 text-lg shadow-xl hover:bg-zinc-200 transition-colors duration-75"
   >
     Evaluate
   </button>
@@ -49,6 +49,7 @@ export const Editor: FC<EditorProps> = ({
       </div>
 
       <MonacoEditor
+        theme="vs-dark"
         language="fsharp"
         className="h-full"
         height="100%"

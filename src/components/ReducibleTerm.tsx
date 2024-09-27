@@ -13,27 +13,27 @@ export const GlobalSelectionContext = createContext<
 function getColors(color: Color, selectionState: SelectionState): string {
   switch (color) {
     case "blue":
-      return classNames("hoverable-snippet__blue border-blue-400", {
-        "bg-blue-200": selectionState === "selected",
-        "bg-blue-50": selectionState === "none",
+      return classNames("hoverable-snippet__blue border-blue-800", {
+        "bg-blue-800": selectionState === "selected",
+        "bg-blue-950": selectionState === "none",
       });
 
     case "amber":
-      return classNames("hoverable-snippet__amber border-amber-400", {
-        "bg-amber-200": selectionState === "selected",
-        "bg-amber-50": selectionState === "none",
+      return classNames("hoverable-snippet__amber border-amber-800", {
+        "bg-amber-800": selectionState === "selected",
+        "bg-amber-950": selectionState === "none",
       });
 
     case "fuchsia":
-      return classNames("hoverable-snippet__fuchsia border-fuchsia-400", {
-        "bg-fuchsia-200": selectionState === "selected",
-        "bg-fuchsia-50": selectionState === "none",
+      return classNames("hoverable-snippet__fuchsia border-fuchsia-800", {
+        "bg-fuchsia-800": selectionState === "selected",
+        "bg-fuchsia-950": selectionState === "none",
       });
 
     case "emerald":
-      return classNames("hoverable-snippet__emerald border-emerald-400", {
-        "bg-emerald-200": selectionState === "selected",
-        "bg-emerald-50": selectionState === "none",
+      return classNames("hoverable-snippet__emerald border-emerald-800", {
+        "bg-emerald-800": selectionState === "selected",
+        "bg-emerald-950": selectionState === "none",
       });
   }
 }
@@ -43,7 +43,7 @@ export const Pre: FC<{ children: ReactNode }> = ({ children }) => {
 
   return (
     <GlobalSelectionContext.Provider value={[selected, setSelected]}>
-      <pre className="whitespace-pre-wrap text-4xl text-zinc-800">
+      <pre className="whitespace-pre-wrap text-4xl text-zinc-300">
         {children}
       </pre>
     </GlobalSelectionContext.Provider>

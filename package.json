@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",
-    "generate:parser": "ohm generateBundles --withTypes src/lambda/parser/grammar.ohm"
+    "generate:parser": "ohm generateBundles --esm --withTypes src/lambda/parser/grammar.ohm"
   },
   "dependencies": {
     "ohm-js": "^17.1.0",
@@ -19,7 +19,10 @@
   "devDependencies": {
     "@eslint/js": "^9.9.0",
     "@ohm-js/cli": "^2.0.0",
-    "@types/react": "^18.3.3",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.5.0",
+    "@testing-library/react": "^16.0.1",
+    "@types/react": "^18.3.9",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "autoprefixer": "^10.4.20",
@@ -27,6 +30,7 @@
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.9",
     "globals": "^15.9.0",
+    "jsdom": "^25.0.1",
     "postcss": "^8.4.47",
     "prettier": "^3.3.3",
     "tailwindcss": "^3.4.13",

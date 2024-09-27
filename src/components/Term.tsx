@@ -1,6 +1,10 @@
-import { FC } from "react";
+import { FC, useContext, useId } from "react";
 import { LambdaExpr } from "../lambda/ast";
-import { BetaReducibleTerm } from "./ReducibleTerm";
+import {
+  BetaReducibleTerm,
+  GlobalSelectionContext,
+  SelectionState,
+} from "./ReducibleTerm";
 import { performReduction } from "../lambda/semantics";
 
 const chainBindings = (
@@ -18,6 +22,18 @@ export const LambdaTerm: FC<{
   expr: LambdaExpr;
   onReduction: (e: LambdaExpr) => void;
 }> = ({ expr, onReduction }) => {
+  const id = useId();
+  const [globalSelection, setGlobalSelection] = useContext(
+    GlobalSelectionContext,
+  );
+
+  const selectionState = ((): SelectionState => {
+    if (globalSelection === undefined) {
+      return "none";
+    }
+    return globalSelection === id ? "selected" : "unselected";
+  })();
+
   switch (expr.type) {
     case "var":
       return expr.name;
@@ -87,10 +103,13 @@ export const LambdaTerm: FC<{
 
       if (expr.f.type === "lambda") {
         const f = expr.f;
+
         return (
           <BetaReducibleTerm
+            selectionState={selectionState}
             onClick={() => {
               const red = performReduction(f, expr.x);
+              setGlobalSelection(id);
               onReduction(red);
             }}
           >

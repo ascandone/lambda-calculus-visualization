@@ -3,12 +3,19 @@ import { unsafeParse } from "./lambda/parser";
 import { LambdaTerm } from "./components/Term";
 import { BetaReducibleTerm, Pre } from "./components/ReducibleTerm";
 
+const s = String.raw`(\x y z. x z (y z))`;
+const k = String.raw`(\u v. u)`;
+// const i = String.raw`(\t . t)`;
+
+const comb = String.raw`${s} (${k} ${s}) ${k}`;
+
 const App: FC = () => (
   <div className="px-4 mx-auto w-full h-screen bg-gray-50">
     <div className="h-24"></div>
     <div className="mx-auto flex justify-center">
       <Pre>
-        <RenderTerm src="(\x. (\u v. u) y) s ((\x.x y) (k y))" />
+        <RenderTerm src={comb} />
+        {/* <RenderTerm src="(\x. (\u v. u) y) s ((\x.x y) (k y))" /> */}
         {/* <Example /> */}
       </Pre>
     </div>

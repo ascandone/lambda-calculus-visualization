@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, ReactNode, useState } from "react";
 import { LambdaExpr } from "../lambda/ast";
 import { BetaReducibleTerm } from "./ReducibleTerm";
 import { performReduction } from "../lambda/semantics";
@@ -49,21 +49,51 @@ export const LambdaTerm: FC<{ expr: LambdaExpr }> = ({ expr }) => {
       );
 
       if (expr.f.type === "lambda") {
-        const lambda = expr.f;
-
-        const handleReduction = () => {
-          performReduction(lambda, expr.x);
-        };
-
         return (
-          <BetaReducibleTerm onClick={handleReduction}>
+          <StatefulBetaReducibleTerm f={expr.f} arg={expr.x}>
             {content}
-          </BetaReducibleTerm>
+          </StatefulBetaReducibleTerm>
         );
       }
 
       return content;
     }
+  }
+};
+
+type ReductionState =
+  | { type: "INITIAL"; f: LambdaExpr & { type: "lambda" }; arg: LambdaExpr }
+  | { type: "APPLIED"; result: LambdaExpr };
+
+const StatefulBetaReducibleTerm: FC<{
+  f: LambdaExpr & { type: "lambda" };
+  arg: LambdaExpr;
+  children: ReactNode;
+}> = ({ f, arg, children }) => {
+  const [state, setState] = useState<ReductionState>({
+    type: "INITIAL",
+    f,
+    arg,
+  });
+
+  switch (state.type) {
+    case "INITIAL": {
+      return (
+        <BetaReducibleTerm
+          onClick={() =>
+            setState({
+              type: "APPLIED",
+              result: performReduction(f, arg),
+            })
+          }
+        >
+          {children}
+        </BetaReducibleTerm>
+      );
+    }
+
+    case "APPLIED":
+      return <LambdaTerm expr={state.result} />;
   }
 };
 

@@ -24,7 +24,7 @@ const DEFAULT_VALUE = String.raw`// Press cmd-Enter or ctrl-Enter to evaluate
 
 // You can define top-level (non recursive) aliases using uppercase identifiers
 // be sure the alias ends with the "in" keyword
-let S x y z = x y z in // "let C x = y" is sugar for "let C = \x.y"
+let S x y z = x z (y z) in // "let C x = y" is sugar for "let C = \x.y"
 let K u v = u in
 let I t = t in
 

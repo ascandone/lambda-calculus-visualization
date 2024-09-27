@@ -23,19 +23,19 @@ describe("reductions", () => {
   });
 
   test("capturing", () => {
-    const out = reductionStep(String.raw`(\x. (\t.t x)) t`);
+    const out = reductionStep(String.raw`(\ x t . t x) t`);
 
     expect(out).toMatchInlineSnapshot(`
       {
         "binding": "t'",
         "body": {
           "f": {
-            "name": "t",
+            "name": "t'",
             "type": "var",
           },
           "type": "appl",
           "x": {
-            "name": "t'",
+            "name": "t",
             "type": "var",
           },
         },

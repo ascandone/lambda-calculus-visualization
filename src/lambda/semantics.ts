@@ -29,7 +29,11 @@ function substitute(
       return substitute(binding, with_, {
         type: "lambda",
         binding: freshVar,
-        body: substitute(binding, { type: "var", name: freshVar }, expr.body),
+        body: substitute(
+          expr.binding,
+          { type: "var", name: freshVar },
+          expr.body,
+        ),
       });
     }
   }

@@ -1,10 +1,10 @@
 import { FC, useCallback, useEffect, useState } from "react";
-import { LambdaExpr } from "../lambda/ast";
-import { parse } from "../lambda/parser";
 import MonacoEditor from "@monaco-editor/react";
+import { parse } from "../lambda/parser";
+import { Program } from "../lambda/ast";
 
 export type EditorProps = {
-  onSubmitTerm: (term: LambdaExpr) => void;
+  onSubmit: (term: Program) => void;
 };
 
 const RunBtn: FC<{ onClick: VoidFunction }> = ({ onClick }) => (
@@ -34,7 +34,7 @@ S (K S) K
 
 const EVENT_RUN = "RUN_EDITOR";
 
-export const Editor: FC<EditorProps> = ({ onSubmitTerm }) => {
+export const Editor: FC<EditorProps> = ({ onSubmit: onSubmitTerm }) => {
   const [value, setValue] = useState(DEFAULT_VALUE);
 
   const evaluateTerm = useCallback(() => {

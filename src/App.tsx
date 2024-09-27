@@ -1,17 +1,17 @@
 import { FC, useState } from "react";
 import { BetaReducibleTerm, TermsList } from "./components/ReducibleTerm";
-import { LambdaExpr } from "./lambda/ast";
 import { Editor } from "./components/Editor";
+import { Program } from "./lambda/ast";
 
 const App: FC = () => {
-  const [term, setTerm] = useState<LambdaExpr | undefined>(undefined);
+  const [program, setProgram] = useState<Program | undefined>(undefined);
 
-  return term === undefined ? (
-    <Editor onSubmitTerm={setTerm} />
+  return program === undefined ? (
+    <Editor onSubmit={setProgram} />
   ) : (
     <div className="px-4 mx-auto w-full">
       <div className="mx-auto flex justify-center py-32">
-        <TermsList term={term} />
+        <TermsList term={program.expr} />
       </div>
     </div>
   );

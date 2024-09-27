@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import type { MatchResult } from "ohm-js";
 import grammar from "./parser/grammar.ohm-bundle";
-import { LambdaExpr } from "./ast";
+import { AliasDefinition, LambdaExpr, Program } from "./ast";
 
 const semantics = grammar.createSemantics();
 
@@ -74,15 +74,6 @@ semantics.addOperation<Program>("parse()", {
 export type ParseResult<T> =
   | { ok: true; value: T }
   | { ok: false; matchResult: MatchResult };
-
-export type AliasDefinition = {
-  name: string;
-  value: LambdaExpr;
-};
-export type Program = {
-  aliases: AliasDefinition[];
-  expr: LambdaExpr;
-};
 
 export function parse(input: string): ParseResult<Program> {
   const matchResult = grammar.match(input);

@@ -1,5 +1,6 @@
 import { expect, test } from "vitest";
-import { Program, unsafeParse } from "./parser";
+import { unsafeParse } from "./parser";
+import { Program } from "./ast";
 
 test("var", () => {
   const parsed = unsafeParse("x");

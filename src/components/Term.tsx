@@ -232,7 +232,7 @@ const Appear: FC<{ children: ReactNode; immediate?: boolean }> = ({
   );
 };
 
-const FAST_FORWARD_MAX_STEPS_NUMBER = 12;
+const FAST_FORWARD_MAX_STEPS_NUMBER = 20;
 
 export const Program: FC<{ program: ProgramT }> = ({ program }) => {
   const [terms, setTerms] = useState<[string, LambdaExpr][]>(() => [

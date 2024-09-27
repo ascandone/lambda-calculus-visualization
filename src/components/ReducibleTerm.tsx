@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { createContext, FC, ReactNode, useContext, useState } from "react";
-import { type Program as ProgramT } from "../lambda/ast";
+import { LambdaExpr, type Program as ProgramT } from "../lambda/ast";
 import { AliasesContext, LambdaTerm } from "./Term";
 
 const colors = ["blue", "emerald", "fuchsia", "lime"] as const;
@@ -106,18 +106,24 @@ export const BetaReducibleTerm: FC<{
   );
 };
 
+function freshId() {
+  return Date.now().toString();
+}
+
 export const Program: FC<{ program: ProgramT }> = ({ program }) => {
-  const [terms, setTerms] = useState([program.expr]);
+  const [terms, setTerms] = useState<[string, LambdaExpr][]>([
+    [freshId(), program.expr],
+  ]);
 
   return (
     <AliasesContext.Provider value={program.aliases}>
       <div className="flex flex-col gap-y-14">
-        {terms.map((term, index) => (
-          <Pre key={index}>
+        {terms.map(([id, term], index) => (
+          <Pre key={id}>
             <LambdaTerm
               expr={term}
               onReduction={(newExpr) => {
-                setTerms([...terms.slice(0, index + 1), newExpr]);
+                setTerms([...terms.slice(0, index + 1), [freshId(), newExpr]]);
               }}
             />
           </Pre>

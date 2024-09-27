@@ -26,6 +26,7 @@ const DEFAULT_VALUE = String.raw`// Press cmd-Enter or ctrl-Enter to evaluate
 // be sure the alias ends with the "in" keyword
 let S x y z = x y z in // "let C x = y" is sugar for "let C = \x.y"
 let K u v = u in
+let I t = t in
 
 // here's the term we are going to evaluate
 S (K S) K

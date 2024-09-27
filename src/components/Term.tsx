@@ -5,16 +5,16 @@ import { BetaReducibleTerm } from "./ReducibleTerm";
 export const LambdaTerm: FC<{ expr: LambdaExpr }> = ({ expr }) => {
   switch (expr.type) {
     case "var":
-      return <BetaReducibleTerm>{expr.name}</BetaReducibleTerm>;
+      return <>{expr.name}</>;
 
     case "lambda": {
       const bindings = expr.bindings.join(" ");
       const body = <LambdaTerm expr={expr.body} />;
 
       return (
-        <BetaReducibleTerm>
+        <>
           λ{bindings}.{body}
-        </BetaReducibleTerm>
+        </>
       );
     }
 
@@ -29,13 +29,17 @@ export const LambdaTerm: FC<{ expr: LambdaExpr }> = ({ expr }) => {
         <LambdaTerm expr={expr.x} />,
       );
 
-      return (
-        <BetaReducibleTerm
-          color={expr.f.type === "lambda" ? "blue" : undefined}
-        >
+      const content = (
+        <>
           {f} {x}
-        </BetaReducibleTerm>
+        </>
       );
+
+      if (expr.f.type === "lambda") {
+        return <BetaReducibleTerm color="blue">{content}</BetaReducibleTerm>;
+      }
+
+      return content;
     }
   }
 };

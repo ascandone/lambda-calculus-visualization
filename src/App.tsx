@@ -7,8 +7,10 @@ const App: FC = () => (
   <div className="px-4 mx-auto w-full h-screen bg-gray-50">
     <div className="h-24"></div>
     <div className="mx-auto flex justify-center">
-      {/* <RenderTerm src="(\x.x y) t" /> */}
-      <Example />
+      <Pre>
+        <RenderTerm src="(\x. (\u v. u) y) s ((\x.x y) (k y))" />
+        {/* <Example /> */}
+      </Pre>
     </div>
   </div>
 );
@@ -21,7 +23,7 @@ export const RenderTerm: FC<{ src: string }> = ({ src }) => {
 
 export const Example: FC = () => {
   return (
-    <Pre>
+    <>
       λ k z.(
       <BetaReducibleTerm color="emerald">
         λk.(λx.a b (
@@ -31,7 +33,7 @@ export const Example: FC = () => {
         (λx.z y<sup>1</sup>) y)
       </BetaReducibleTerm>{" "}
       a z
-    </Pre>
+    </>
   );
 };
 

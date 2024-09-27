@@ -7,9 +7,9 @@
     --hover-border-color: theme("colors.blue.500");
 }
 
-.hoverable-snippet__lime {
-    --hover-color: theme("colors.lime.200");
-    --hover-border-color: theme("colors.lime.500");
+.hoverable-snippet__amber {
+    --hover-color: theme("colors.amber.200");
+    --hover-border-color: theme("colors.amber.500");
 }
 
 .hoverable-snippet__fuchsia {

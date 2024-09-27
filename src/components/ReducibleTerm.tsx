@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { createContext, FC, ReactNode, useContext, useState } from "react";
 
-const colors = ["blue", "emerald", "fuchsia", "lime"] as const;
+const colors = ["blue", "emerald", "fuchsia", "amber"] as const;
 export type Color = (typeof colors)[number];
 
 const ColorIdContext = createContext<number>(0);
@@ -18,10 +18,10 @@ function getColors(color: Color, selectionState: SelectionState): string {
         "bg-blue-50": selectionState === "none",
       });
 
-    case "lime":
-      return classNames("hoverable-snippet__lime border-lime-400", {
-        "bg-lime-200": selectionState === "selected",
-        "bg-lime-50": selectionState === "none",
+    case "amber":
+      return classNames("hoverable-snippet__amber border-amber-400", {
+        "bg-amber-200": selectionState === "selected",
+        "bg-amber-50": selectionState === "none",
       });
 
     case "fuchsia":

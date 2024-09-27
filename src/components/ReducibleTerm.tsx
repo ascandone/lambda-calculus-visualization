@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { createContext, FC, ReactNode, useContext, useState } from "react";
-import { LambdaExpr } from "../lambda/ast";
-import { LambdaTerm } from "./Term";
+import { type Program as ProgramT } from "../lambda/ast";
+import { AliasesContext, LambdaTerm } from "./Term";
 
 const colors = ["blue", "emerald", "fuchsia", "lime"] as const;
 export type Color = (typeof colors)[number];
@@ -92,7 +92,7 @@ export const BetaReducibleTerm: FC<{
       <span
         className={`
         cursor-pointer hoverable-snippet
-        rounded-xl pb-1.5 mb-1.5
+        rounded-lg pb-1.5 mb-1.5
         transitition-colors duration-100 ease-in-out
         border-b-4
         ${getColors(color, selectionState)} ${selectionCls}
@@ -106,21 +106,23 @@ export const BetaReducibleTerm: FC<{
   );
 };
 
-export const TermsList: FC<{ term: LambdaExpr }> = ({ term }) => {
-  const [terms, setTerms] = useState([term]);
+export const Program: FC<{ program: ProgramT }> = ({ program }) => {
+  const [terms, setTerms] = useState([program.expr]);
 
   return (
-    <div className="flex flex-col gap-y-12">
-      {terms.map((term, index) => (
-        <Pre key={index}>
-          <LambdaTerm
-            expr={term}
-            onReduction={(newExpr) => {
-              setTerms([...terms.slice(0, index + 1), newExpr]);
-            }}
-          />
-        </Pre>
-      ))}
-    </div>
+    <AliasesContext.Provider value={program.aliases}>
+      <div className="flex flex-col gap-y-12">
+        {terms.map((term, index) => (
+          <Pre key={index}>
+            <LambdaTerm
+              expr={term}
+              onReduction={(newExpr) => {
+                setTerms([...terms.slice(0, index + 1), newExpr]);
+              }}
+            />
+          </Pre>
+        ))}
+      </div>
+    </AliasesContext.Provider>
   );
 };

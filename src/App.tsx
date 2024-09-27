@@ -1,8 +1,7 @@
 import { FC, useCallback, useEffect, useState } from "react";
-import { BetaReducibleTerm, TermsList } from "./components/ReducibleTerm";
+import { BetaReducibleTerm, Program } from "./components/ReducibleTerm";
 import { Editor, EditorProps } from "./components/Editor";
-import { Program } from "./lambda/ast";
-import { unalias } from "./lambda/semantics";
+import { type Program as ProgramT } from "./lambda/ast";
 
 const useRouter = () => {
   // hack to re-render the component
@@ -47,7 +46,7 @@ S (K S) K
 
 const App: FC = () => {
   const [value, setValue] = useState(DEFAULT_VALUE);
-  const [program, setProgram] = useState<Program | undefined>(undefined);
+  const [program, setProgram] = useState<ProgramT | undefined>(undefined);
 
   const router = useRouter();
   const handleSubmit: EditorProps["onSubmit"] = (program) => {
@@ -70,7 +69,7 @@ const App: FC = () => {
       return (
         <div className="px-4 mx-auto w-full">
           <div className="mx-auto flex justify-center py-32">
-            <TermsList term={unalias(program)} />
+            <Program program={program} />
           </div>
         </div>
       );

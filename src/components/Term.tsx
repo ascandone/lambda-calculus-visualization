@@ -1,11 +1,13 @@
-import { FC, useContext, useId } from "react";
-import { LambdaExpr } from "../lambda/ast";
+import { createContext, FC, useContext, useId } from "react";
+import { AliasDefinition, LambdaExpr } from "../lambda/ast";
 import {
   BetaReducibleTerm,
   GlobalSelectionContext,
   SelectionState,
 } from "./ReducibleTerm";
-import { performReduction } from "../lambda/semantics";
+import { performReduction, unalias } from "../lambda/semantics";
+
+export const AliasesContext = createContext<AliasDefinition[]>([]);
 
 const chainBindings = (
   expr: LambdaExpr & { type: "lambda" },
@@ -54,6 +56,8 @@ export const LambdaTerm: FC<{
     GlobalSelectionContext,
   );
 
+  const aliases = useContext(AliasesContext);
+
   const selectionState = ((): SelectionState => {
     if (globalSelection === undefined) {
       return "none";
@@ -62,8 +66,22 @@ export const LambdaTerm: FC<{
   })();
 
   switch (expr.type) {
-    case "var":
-      return handleSup(expr.name);
+    case "var": {
+      const isAlias = /[A-Z]/.test(expr.name[0]);
+
+      if (!isAlias) {
+        return handleSup(expr.name);
+      }
+
+      function handleClick() {
+        const red = unalias(aliases, expr);
+        onReduction(red);
+      }
+
+      return (
+        <BetaReducibleTerm onClick={handleClick}>{expr.name}</BetaReducibleTerm>
+      );
+    }
 
     case "lambda": {
       const [bindings, body] = chainBindings(expr);

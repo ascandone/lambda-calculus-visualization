@@ -1,4 +1,4 @@
-import { LambdaExpr, Program } from "./ast";
+import { AliasDefinition, LambdaExpr } from "./ast";
 
 function substitute(
   binding: string,
@@ -59,35 +59,32 @@ export function performReduction(
   return substitute(f.binding, arg, f.body);
 }
 
-export function unalias(program: Program): LambdaExpr {
-  function helper(expr: LambdaExpr): LambdaExpr {
-    switch (expr.type) {
-      case "var": {
-        const lookup = program.aliases.find(
-          (alias) => alias.name === expr.name,
-        );
-        if (lookup === undefined) {
-          return expr;
-        }
-        return lookup.value;
+export function unalias(
+  aliases: AliasDefinition[],
+  expr: LambdaExpr,
+): LambdaExpr {
+  switch (expr.type) {
+    case "var": {
+      const lookup = aliases.find((alias) => alias.name === expr.name);
+      if (lookup === undefined) {
+        return expr;
       }
-
-      case "appl": {
-        return {
-          type: "appl",
-          f: helper(expr.f),
-          x: helper(expr.x),
-        };
-      }
-
-      case "lambda":
-        return {
-          type: "lambda",
-          binding: expr.binding,
-          body: helper(expr.body),
-        };
+      return lookup.value;
     }
-  }
 
-  return helper(program.expr);
+    case "appl": {
+      return {
+        type: "appl",
+        f: unalias(aliases, expr.f),
+        x: unalias(aliases, expr.x),
+      };
+    }
+
+    case "lambda":
+      return {
+        type: "lambda",
+        binding: expr.binding,
+        body: unalias(aliases, expr.body),
+      };
+  }
 }

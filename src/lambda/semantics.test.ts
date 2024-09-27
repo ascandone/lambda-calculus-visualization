@@ -57,7 +57,7 @@ describe("aliases substitution", () => {
   test("substitute when found", () => {
     const program = unsafeParse(String.raw`let A = a in \e . f A`);
 
-    expect(unalias(program)).toEqual<LambdaExpr>(
+    expect(unalias(program.aliases, program.expr)).toEqual<LambdaExpr>(
       unsafeParse(String.raw`\e. f a`).expr,
     );
   });

@@ -1,5 +1,4 @@
 import { FC, useCallback, useEffect, useState } from "react";
-import { BetaReducibleTerm } from "./components/ReducibleTerm";
 import { Editor, EditorProps } from "./components/Editor";
 import { type Program as ProgramT } from "./lambda/ast";
 import { Program } from "./components/Term";
@@ -79,22 +78,6 @@ const App: FC = () => {
         <Editor onSubmit={handleSubmit} value={value} setValue={setValue} />
       );
   }
-};
-
-export const Example: FC = () => {
-  return (
-    <>
-      λ k z.(
-      <BetaReducibleTerm color="emerald">
-        λk.(λx.a b (
-        <BetaReducibleTerm color="fuchsia">(λ x.x) z</BetaReducibleTerm>))
-      </BetaReducibleTerm>{" "}
-      <BetaReducibleTerm color="blue">
-        (λx.z y<sup>1</sup>) y)
-      </BetaReducibleTerm>{" "}
-      a z
-    </>
-  );
 };
 
 export default App;

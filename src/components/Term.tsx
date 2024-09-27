@@ -239,6 +239,12 @@ export const Program: FC<{ program: ProgramT }> = ({ program }) => {
     [freshId(), program.expr],
   ]);
 
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      window.scrollTo(0, document.body.scrollHeight);
+    });
+  }, [terms]);
+
   function handleSubstituteAliases(index: number, term: LambdaExpr) {
     const previous = terms.slice(0, index);
     const substitutedTerm = unalias(program.aliases, term);

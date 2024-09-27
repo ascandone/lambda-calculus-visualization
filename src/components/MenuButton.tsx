@@ -31,17 +31,19 @@ export const MenuButton: FC<MenuButtonProps> = ({ children }) => (
   </DropdownMenu.Root>
 );
 
-export const MenuItem: FC<{ children: ReactNode; onClick: VoidFunction }> = ({
-  children,
-  onClick,
-}) => (
+export const MenuItem: FC<{
+  children: ReactNode;
+  onClick: VoidFunction;
+  disabled?: boolean;
+}> = ({ children, onClick, disabled }) => (
   <DropdownMenu.Item
+    disabled={disabled}
     onClick={onClick}
     className={`
         group text-lg leading-none text-zinc-600 rounded
         flex items-center h-10 relative px-4
         select-none outline-none
-        data-[disabled]:text-mauve8 data-[disabled]:pointer-events-none
+        data-[disabled]:text-zinc-400 data-[disabled]:pointer-events-none
         data-[highlighted]:bg-zinc-100
     `}
   >

@@ -200,8 +200,9 @@ function optionalParens(putParens: boolean, elem: JSX.Element) {
   }
 }
 
+let currentId = 0;
 function freshId() {
-  return Date.now().toString();
+  return (currentId++).toString();
 }
 
 const Appear: FC<{ children: ReactNode; immediate?: boolean }> = ({
@@ -226,9 +227,36 @@ const Appear: FC<{ children: ReactNode; immediate?: boolean }> = ({
 };
 
 export const Program: FC<{ program: ProgramT }> = ({ program }) => {
-  const [terms, setTerms] = useState<[string, LambdaExpr][]>([
+  const [terms, setTerms] = useState<[string, LambdaExpr][]>(() => [
     [freshId(), program.expr],
   ]);
+
+  function handleSubstituteAliases(index: number, term: LambdaExpr) {
+    const previous = terms.slice(0, index);
+    const substitutedTerm = unalias(program.aliases, term);
+    setTerms([...previous, [freshId(), term], [freshId(), substitutedTerm]]);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  function handleCanonicalize(_index: number) {
+    alert("Not yet implemented");
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  function handleFastForward(_index: number) {
+    alert("Not yet implemented");
+  }
+
+  function handleDelete(index: number) {
+    if (index === 0) {
+      return;
+    }
+    setTerms(terms.slice(0, index));
+  }
+
+  function handleReduction(index: number, newExpr: LambdaExpr) {
+    setTerms([...terms.slice(0, index + 1), [freshId(), newExpr]]);
+  }
 
   return (
     <AliasesContext.Provider value={program.aliases}>
@@ -237,23 +265,30 @@ export const Program: FC<{ program: ProgramT }> = ({ program }) => {
           <div key={id} className="flex items-start gap-x-6">
             <div className="my-2">
               <MenuButton>
-                <MenuItem onClick={() => {}}>Substitute all aliases</MenuItem>
-                <MenuItem onClick={() => {}}>Canonicalize</MenuItem>
-                <MenuItem onClick={() => {}}>Fast forward</MenuItem>
-                <MenuItem onClick={() => {}}>Delete step</MenuItem>
+                {/* TODO disabled where there aren't bound aliases */}
+                <MenuItem onClick={() => handleSubstituteAliases(index, term)}>
+                  Substitute all aliases
+                </MenuItem>
+                <MenuItem onClick={() => handleCanonicalize(index)}>
+                  Canonicalize
+                </MenuItem>
+                <MenuItem onClick={() => handleFastForward(index)}>
+                  Fast forward
+                </MenuItem>
+                <MenuItem
+                  disabled={index === 0}
+                  onClick={() => handleDelete(index)}
+                >
+                  Delete step
+                </MenuItem>
               </MenuButton>
             </div>
 
-            <Appear immediate={index === 0}>
+            <Appear>
               <Pre>
                 <LambdaTerm
                   expr={term}
-                  onReduction={(newExpr) => {
-                    setTerms([
-                      ...terms.slice(0, index + 1),
-                      [freshId(), newExpr],
-                    ]);
-                  }}
+                  onReduction={(expr) => handleReduction(index, expr)}
                 />
               </Pre>
             </Appear>

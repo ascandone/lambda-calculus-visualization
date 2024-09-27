@@ -7,8 +7,8 @@ import "@testing-library/jest-dom/vitest";
 
 describe("render terms the first time", () => {
   function checkRender(src: string, expected = src) {
-    const term = unsafeParse(replaceLambdas(src));
-    const node = render(<LambdaTerm expr={term} />);
+    const term = unsafeParse(replaceLambdas(src)).expr;
+    const node = render(<LambdaTerm expr={term} onReduction={() => {}} />);
 
     expect(node.baseElement).toHaveTextContent(replaceLambdas(expected));
   }

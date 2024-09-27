@@ -6,19 +6,19 @@ import { LambdaExpr } from "./ast";
 test("simple case", () => {
   const out = reductionStep(String.raw`(\x.x) t`);
 
-  expect(out).toEqual(unsafeParse(`t`));
+  expect(out).toEqual(unsafeParse(`t`).expr);
 });
 
 test("in appl", () => {
   const out = reductionStep(String.raw`(\x.a x) t`);
 
-  expect(out).toEqual(unsafeParse(`a t`));
+  expect(out).toEqual(unsafeParse(`a t`).expr);
 });
 
 test("in lambda", () => {
   const out = reductionStep(String.raw`(\x.\y.x) t`);
 
-  expect(out).toEqual(unsafeParse(String.raw`\y.t`));
+  expect(out).toEqual(unsafeParse(String.raw`\y.t`).expr);
 });
 
 test("capturing", () => {
@@ -44,7 +44,7 @@ test("capturing", () => {
 });
 
 function reductionStep(src: string): LambdaExpr {
-  const parsed = unsafeParse(src);
+  const parsed = unsafeParse(src).expr;
   if (parsed.type === "appl" && parsed.f.type === "lambda") {
     return performReduction(parsed.f, parsed.x);
   }

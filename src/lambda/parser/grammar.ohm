@@ -1,6 +1,6 @@
 Expr {
   MAIN
-    = Appl -- expr
+    = Appl
 
   Appl
     = Appl Exp -- appl
@@ -25,4 +25,9 @@ Expr {
 
   number  (a number)
     = digit+
+
+  newline = "\n" | "\r"
+  comment = "//" (~newline any)* newline
+
+  space += comment
 }

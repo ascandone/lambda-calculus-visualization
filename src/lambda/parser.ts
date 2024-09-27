@@ -37,9 +37,11 @@ semantics.addOperation<LambdaExpr>("expr()", {
   },
 });
 
-semantics.addOperation<LambdaExpr>("parse()", {
-  MAIN_expr(a) {
-    return a.expr();
+semantics.addOperation<Program>("parse()", {
+  MAIN(a) {
+    return {
+      expr: a.expr(),
+    };
   },
 });
 
@@ -47,7 +49,11 @@ export type ParseResult<T> =
   | { ok: true; value: T }
   | { ok: false; matchResult: MatchResult };
 
-export function parse(input: string): ParseResult<LambdaExpr> {
+export type Program = {
+  expr: LambdaExpr;
+};
+
+export function parse(input: string): ParseResult<Program> {
   const matchResult = grammar.match(input);
   if (matchResult.failed()) {
     return { ok: false, matchResult };
@@ -56,7 +62,7 @@ export function parse(input: string): ParseResult<LambdaExpr> {
   return { ok: true, value: semantics(matchResult).parse() };
 }
 
-export function unsafeParse(input: string): LambdaExpr {
+export function unsafeParse(input: string): Program {
   const res = parse(input);
   if (res.ok) {
     return res.value;

@@ -1,13 +1,26 @@
 import { expect, test } from "vitest";
-import { parse, ParseResult, unsafeParse } from "./parser";
-import { LambdaExpr } from "./ast";
+import { Program, unsafeParse } from "./parser";
 
 test("var", () => {
-  const parsed = parse("x");
+  const parsed = unsafeParse("x");
 
-  expect(parsed).toEqual<ParseResult<LambdaExpr>>({
-    ok: true,
-    value: {
+  expect(parsed).toEqual<Program>({
+    expr: {
+      type: "var",
+      name: "x",
+    },
+  });
+});
+
+test("comments", () => {
+  const parsed = unsafeParse(`
+    // example comment
+x
+// another trailing comment
+`);
+
+  expect(parsed).toEqual<Program>({
+    expr: {
       type: "var",
       name: "x",
     },
@@ -15,11 +28,10 @@ test("var", () => {
 });
 
 test("parens", () => {
-  const parsed = parse("(x)");
+  const parsed = unsafeParse("(x)");
 
-  expect(parsed).toEqual<ParseResult<LambdaExpr>>({
-    ok: true,
-    value: {
+  expect(parsed).toEqual<Program>({
+    expr: {
       type: "var",
       name: "x",
     },
@@ -27,11 +39,10 @@ test("parens", () => {
 });
 
 test("lambda", () => {
-  const parsed = parse(String.raw`\x.x`);
+  const parsed = unsafeParse(String.raw`\x.x`);
 
-  expect(parsed).toEqual<ParseResult<LambdaExpr>>({
-    ok: true,
-    value: {
+  expect(parsed).toEqual<Program>({
+    expr: {
       type: "lambda",
       binding: "x",
       body: {
@@ -43,11 +54,10 @@ test("lambda", () => {
 });
 
 test("lambda with greek char", () => {
-  const parsed = parse(String.raw`λx.x`);
+  const parsed = unsafeParse(String.raw`λx.x`);
 
-  expect(parsed).toEqual<ParseResult<LambdaExpr>>({
-    ok: true,
-    value: {
+  expect(parsed).toEqual<Program>({
+    expr: {
       type: "lambda",
       binding: "x",
       body: {
@@ -59,15 +69,10 @@ test("lambda with greek char", () => {
 });
 
 test("application", () => {
-  const parsed = parse(`x y`);
+  const parsed = unsafeParse(`x y`);
 
-  if (!parsed.ok) {
-    throw new Error(parsed.matchResult.message);
-  }
-
-  expect(parsed).toEqual<ParseResult<LambdaExpr>>({
-    ok: true,
-    value: {
+  expect(parsed).toEqual<Program>({
+    expr: {
       type: "appl",
       f: {
         type: "var",
@@ -84,7 +89,7 @@ test("application", () => {
 test("application twice", () => {
   const parsed = unsafeParse(`x y z`);
 
-  expect(parsed).toMatchInlineSnapshot(`
+  expect(parsed.expr).toMatchInlineSnapshot(`
     {
       "f": {
         "f": {
@@ -109,7 +114,7 @@ test("application twice", () => {
 test("parens changes application prec", () => {
   const parsed = unsafeParse(`x (y z)`);
 
-  expect(parsed).toMatchInlineSnapshot(`
+  expect(parsed.expr).toMatchInlineSnapshot(`
     {
       "f": {
         "name": "x",
@@ -134,7 +139,7 @@ test("parens changes application prec", () => {
 test("nested lambda prec", () => {
   const parsed = unsafeParse(String.raw`\x . \ y. x`);
 
-  expect(parsed).toMatchInlineSnapshot(`
+  expect(parsed.expr).toMatchInlineSnapshot(`
     {
       "binding": "x",
       "body": {
@@ -153,7 +158,7 @@ test("nested lambda prec", () => {
 test("nested lambda sugar", () => {
   const parsed = unsafeParse(String.raw`\x y. x`);
 
-  expect(parsed).toMatchInlineSnapshot(`
+  expect(parsed.expr).toMatchInlineSnapshot(`
     {
       "binding": "x",
       "body": {
@@ -178,7 +183,7 @@ test("nested lambda sugar (2)", () => {
 test("iif", () => {
   const parsed = unsafeParse(String.raw`(\x.x)(\y.y)`);
 
-  expect(parsed).toMatchInlineSnapshot(`
+  expect(parsed.expr).toMatchInlineSnapshot(`
     {
       "f": {
         "binding": "x",

@@ -196,7 +196,7 @@ export function canonicalize(expr: LambdaExpr): LambdaExpr {
       }
 
       case "lambda": {
-        const freshId = genId((candidate) => !isFree(candidate, expr.body));
+        const freshId = genId((candidate) => !isFree(candidate, expr));
         const substitutedLambda = substitute(
           expr.binding,
           { type: "var", name: freshId },

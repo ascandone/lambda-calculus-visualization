@@ -1,5 +1,10 @@
 import { describe, expect, test } from "vitest";
-import { containsBoundAliases, performReduction, unalias } from "./semantics";
+import {
+  autoreduce,
+  containsBoundAliases,
+  performReduction,
+  unalias,
+} from "./semantics";
 import { unsafeParse } from "./parser";
 import { LambdaExpr } from "./ast";
 
@@ -42,6 +47,33 @@ describe("reductions", () => {
         "type": "lambda",
       }
     `);
+  });
+});
+
+describe("autoreduce", () => {
+  test("when reduction is top-level", () => {
+    const out = autoreduce(unsafeParse(String.raw`(\x.x) t`).expr);
+    expect(out).toEqual(unsafeParse(`t`).expr);
+  });
+
+  test("when reduction is nested in lambda", () => {
+    const out = autoreduce(unsafeParse(String.raw`\u . (\x.x) t`).expr);
+    expect(out).toEqual(unsafeParse(String.raw`\u . t`).expr);
+  });
+
+  test("when reduction is nested in appl arg", () => {
+    const out = autoreduce(unsafeParse(String.raw`f ((\x.x) t)`).expr);
+    expect(out).toEqual(unsafeParse(String.raw`f t`).expr);
+  });
+
+  test("when reduction is nested in appl f", () => {
+    const out = autoreduce(unsafeParse(String.raw`((\x.x) t) u`).expr);
+    expect(out).toEqual(unsafeParse(String.raw`t u`).expr);
+  });
+
+  test("when there is not reduction", () => {
+    const out = autoreduce(unsafeParse(String.raw`f (a (\x.x) t)`).expr);
+    expect(out).toEqual(undefined);
   });
 });
 

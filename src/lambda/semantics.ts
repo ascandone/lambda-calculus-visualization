@@ -59,6 +59,52 @@ export function performReduction(
   return substitute(f.binding, arg, f.body);
 }
 
+export function autoreduce(expr: LambdaExpr): LambdaExpr | undefined {
+  switch (expr.type) {
+    case "var":
+      return undefined;
+
+    case "lambda": {
+      const red = autoreduce(expr.body);
+      if (red !== undefined) {
+        return {
+          type: "lambda",
+          binding: expr.binding,
+          body: red,
+        };
+      }
+
+      return undefined;
+    }
+
+    case "appl": {
+      if (expr.f.type === "lambda") {
+        return performReduction(expr.f, expr.x);
+      }
+
+      const fRed = autoreduce(expr.f);
+      if (fRed !== undefined) {
+        return {
+          type: "appl",
+          f: fRed,
+          x: expr.x,
+        };
+      }
+
+      const xRed = autoreduce(expr.x);
+      if (xRed !== undefined) {
+        return {
+          type: "appl",
+          f: expr.f,
+          x: xRed,
+        };
+      }
+
+      return undefined;
+    }
+  }
+}
+
 export function unalias(
   aliases: AliasDefinition[],
   expr: LambdaExpr,

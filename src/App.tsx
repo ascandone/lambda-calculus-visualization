@@ -31,18 +31,17 @@ const useRouter = () => {
 
 const DEFAULT_VALUE = String.raw`// Press cmd-Enter or ctrl-Enter to evaluate
 
-// variables are written with lowercase chars
-// lambda are written using the "\binding.body" syntax
-// you can use the "\x y.body" syntax as a sugar for "\x.\y.body"
+// lambdas are written using the "\binding.body" syntax
+// "\x y.body" is sugar for "\x.\y.body"
 
-// You can define top-level (non recursive) aliases using uppercase identifiers
-// be sure the alias ends with the "in" keyword
-let S x y z = x z (y z) in // "let C x = y" is sugar for "let C = \x.y"
+// You can define top-level aliases using uppercase identifiers
+let I t = t in // <- this is the same as "let I = \t . t"
+let S x y z = x z (y z) in
 let K u v = u in
-let I t = t in
 
-// here's the term we are going to evaluate
 S (K S) K
+
+// source: https://github.com/ascandone/lambda-calculus-visualization
 `;
 
 const App: FC = () => {
@@ -69,7 +68,7 @@ const App: FC = () => {
 
       return (
         <div className="px-4 mx-auto w-full">
-          <div className="mx-auto max-w-screen-2xl px-2 py-32">
+          <div className="mx-auto max-w-screen-2xl px-2 py-16">
             <Program program={program} />
           </div>
         </div>

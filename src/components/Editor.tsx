@@ -43,14 +43,14 @@ export const Editor: FC<EditorProps> = ({
   }, [evaluateTerm]);
 
   return (
-    <div className="w-full h-full">
-      <div className="px-4 py-4 fixed bottom-4 right-4 z-10">
+    <div className="h-full">
+      <div className="fixed bottom-6 right-10 z-10">
         <RunBtn onClick={evaluateTerm} />
       </div>
 
       <MonacoEditor
         language="fsharp"
-        className="h-full p-4"
+        className="h-full"
         height="100%"
         defaultValue={value}
         onChange={(e) => setValue(e ?? "")}
@@ -63,7 +63,7 @@ export const Editor: FC<EditorProps> = ({
           );
         }}
         options={{
-          fontSize: 32,
+          fontSize: 24,
           lineNumbers: "off",
           bracketPairColorization: { enabled: false },
           scrollBeyondLastLine: false,

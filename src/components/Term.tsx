@@ -41,7 +41,7 @@ function handleSup(name: string) {
     return (
       <>
         {name.replace(/'/g, "")}
-        <sup>{trailingQuotes}</sup>
+        <sub>{trailingQuotes}</sub>
       </>
     );
   }

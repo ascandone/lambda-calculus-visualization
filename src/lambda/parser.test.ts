@@ -169,6 +169,12 @@ test("nested lambda sugar", () => {
   `);
 });
 
+test("nested lambda sugar (2)", () => {
+  const s1 = unsafeParse(String.raw`\x. (\t.t x)`);
+  const s2 = unsafeParse(String.raw`\x t. t x`);
+  expect(s1).toEqual(s2);
+});
+
 test("iif", () => {
   const parsed = unsafeParse(String.raw`(\x.x)(\y.y)`);
 

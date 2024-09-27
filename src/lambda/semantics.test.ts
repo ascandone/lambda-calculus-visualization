@@ -21,6 +21,28 @@ test("in lambda", () => {
   expect(out).toEqual(unsafeParse(String.raw`\y.t`));
 });
 
+test("capturing", () => {
+  const out = reductionStep(String.raw`(\x. (\t.t x)) t`);
+
+  expect(out).toMatchInlineSnapshot(`
+    {
+      "binding": "t'",
+      "body": {
+        "f": {
+          "name": "t",
+          "type": "var",
+        },
+        "type": "appl",
+        "x": {
+          "name": "t'",
+          "type": "var",
+        },
+      },
+      "type": "lambda",
+    }
+  `);
+});
+
 function reductionStep(src: string): LambdaExpr {
   const parsed = unsafeParse(src);
   if (parsed.type === "appl" && parsed.f.type === "lambda") {

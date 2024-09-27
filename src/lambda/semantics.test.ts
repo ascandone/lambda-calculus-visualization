@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { performReduction, unalias } from "./semantics";
+import { containsBoundAliases, performReduction, unalias } from "./semantics";
 import { unsafeParse } from "./parser";
 import { LambdaExpr } from "./ast";
 
@@ -60,5 +60,17 @@ describe("aliases substitution", () => {
     expect(unalias(program.aliases, program.expr)).toEqual<LambdaExpr>(
       unsafeParse(String.raw`\e. f a`).expr,
     );
+  });
+
+  test("check bound aliases when found", () => {
+    const program = unsafeParse(String.raw`let A = a in \e . f A`);
+
+    expect(containsBoundAliases(program.aliases, program.expr)).toBe(true);
+  });
+
+  test("check bound aliases when not found", () => {
+    const program = unsafeParse(String.raw`let A = a in \e . f U`);
+
+    expect(containsBoundAliases(program.aliases, program.expr)).toBe(false);
   });
 });

@@ -18,7 +18,11 @@ import {
   Pre,
   SelectionState,
 } from "./ReducibleTerm";
-import { performReduction, unalias } from "../lambda/semantics";
+import {
+  containsBoundAliases,
+  performReduction,
+  unalias,
+} from "../lambda/semantics";
 import { MenuButton, MenuItem } from "./MenuButton";
 
 export const AliasesContext = createContext<AliasDefinition[]>([]);
@@ -265,8 +269,10 @@ export const Program: FC<{ program: ProgramT }> = ({ program }) => {
           <div key={id} className="flex items-start gap-x-6">
             <div className="my-2">
               <MenuButton>
-                {/* TODO disabled where there aren't bound aliases */}
-                <MenuItem onClick={() => handleSubstituteAliases(index, term)}>
+                <MenuItem
+                  disabled={!containsBoundAliases(program.aliases, term)}
+                  onClick={() => handleSubstituteAliases(index, term)}
+                >
                   Substitute all aliases
                 </MenuItem>
                 <MenuItem onClick={() => handleCanonicalize(index)}>

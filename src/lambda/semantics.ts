@@ -88,3 +88,24 @@ export function unalias(
       };
   }
 }
+
+export function containsBoundAliases(
+  aliases: AliasDefinition[],
+  expr: LambdaExpr,
+): boolean {
+  switch (expr.type) {
+    case "var": {
+      return aliases.some((alias) => alias.name === expr.name);
+    }
+
+    case "appl": {
+      return (
+        containsBoundAliases(aliases, expr.f) ||
+        containsBoundAliases(aliases, expr.x)
+      );
+    }
+
+    case "lambda":
+      return containsBoundAliases(aliases, expr.body);
+  }
+}

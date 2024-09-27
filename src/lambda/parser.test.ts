@@ -233,3 +233,30 @@ let A = x in y
     },
   });
 });
+
+test("aliases sugar", () => {
+  const parsed = unsafeParse(`
+let A a b = x in y
+`);
+
+  expect(parsed).toEqual<Program>({
+    aliases: [
+      {
+        name: "A",
+        value: {
+          type: "lambda",
+          binding: "a",
+          body: {
+            type: "lambda",
+            binding: "b",
+            body: { type: "var", name: "x" },
+          },
+        },
+      },
+    ],
+    expr: {
+      type: "var",
+      name: "y",
+    },
+  });
+});

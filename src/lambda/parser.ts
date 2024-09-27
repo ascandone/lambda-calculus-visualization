@@ -38,10 +38,19 @@ semantics.addOperation<LambdaExpr>("expr()", {
 });
 
 semantics.addOperation<AliasDefinition>("alias()", {
-  AliasDecl(_let, ident, _eq, appl, _in): AliasDefinition {
+  AliasDecl(_let, ident, bindings, _eq, appl, _in): AliasDefinition {
+    const params = bindings.children.map((binding) => binding.sourceString);
+    const value: LambdaExpr = params.reduceRight(
+      (body, binding): LambdaExpr => ({
+        type: "lambda",
+        binding,
+        body,
+      }),
+      appl.expr() as LambdaExpr,
+    );
     return {
       name: ident.sourceString,
-      value: appl.expr(),
+      value,
     };
   },
 });

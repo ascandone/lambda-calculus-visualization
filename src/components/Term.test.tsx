@@ -49,6 +49,10 @@ describe("render terms the first time", () => {
     checkRender(String.raw`\x y.x y`);
   });
 
+  test("nested lambda sugar", () => {
+    checkRender(String.raw`\x.\y.b`, String.raw`\x y.b`);
+  });
+
   test("put parens when lambda on the left", () => {
     checkRender(String.raw`(\x.x) y`);
   });

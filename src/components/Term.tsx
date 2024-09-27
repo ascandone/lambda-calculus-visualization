@@ -1,6 +1,18 @@
 import { FC } from "react";
 import { LambdaExpr } from "../lambda/ast";
 import { BetaReducibleTerm } from "./ReducibleTerm";
+import { performReduction } from "../lambda/semantics";
+
+const chainBindings = (
+  expr: LambdaExpr & { type: "lambda" },
+): [bindings: string[], body: LambdaExpr] => {
+  if (expr.body.type !== "lambda") {
+    return [expr.bindings, expr.body];
+  }
+
+  const [bindings, body] = chainBindings(expr.body);
+  return [expr.bindings.concat(bindings), body];
+};
 
 export const LambdaTerm: FC<{ expr: LambdaExpr }> = ({ expr }) => {
   switch (expr.type) {
@@ -8,12 +20,13 @@ export const LambdaTerm: FC<{ expr: LambdaExpr }> = ({ expr }) => {
       return expr.name;
 
     case "lambda": {
-      const bindings = expr.bindings.join(" ");
-      const body = <LambdaTerm expr={expr.body} />;
+      const [bindings, body] = chainBindings(expr);
+      const bindingsJ = bindings.join(" ");
+      const bodyT = <LambdaTerm expr={body} />;
 
       return (
         <>
-          λ{bindings}.{body}
+          λ{bindingsJ}.{bodyT}
         </>
       );
     }
@@ -36,7 +49,17 @@ export const LambdaTerm: FC<{ expr: LambdaExpr }> = ({ expr }) => {
       );
 
       if (expr.f.type === "lambda") {
-        return <BetaReducibleTerm>{content}</BetaReducibleTerm>;
+        const lambda = expr.f;
+
+        const handleReduction = () => {
+          performReduction(lambda, expr.x);
+        };
+
+        return (
+          <BetaReducibleTerm onClick={handleReduction}>
+            {content}
+          </BetaReducibleTerm>
+        );
       }
 
       return content;

@@ -1,46 +1,48 @@
-import { expect, test } from "vitest";
+import { describe, expect, test } from "vitest";
 import { performReduction } from "./semantics";
 import { unsafeParse } from "./parser";
 import { LambdaExpr } from "./ast";
 
-test("simple case", () => {
-  const out = reductionStep(String.raw`(\x.x) t`);
+describe("reductions", () => {
+  test("simple case", () => {
+    const out = reductionStep(String.raw`(\x.x) t`);
 
-  expect(out).toEqual(unsafeParse(`t`).expr);
-});
+    expect(out).toEqual(unsafeParse(`t`).expr);
+  });
 
-test("in appl", () => {
-  const out = reductionStep(String.raw`(\x.a x) t`);
+  test("in appl", () => {
+    const out = reductionStep(String.raw`(\x.a x) t`);
 
-  expect(out).toEqual(unsafeParse(`a t`).expr);
-});
+    expect(out).toEqual(unsafeParse(`a t`).expr);
+  });
 
-test("in lambda", () => {
-  const out = reductionStep(String.raw`(\x.\y.x) t`);
+  test("in lambda", () => {
+    const out = reductionStep(String.raw`(\x.\y.x) t`);
 
-  expect(out).toEqual(unsafeParse(String.raw`\y.t`).expr);
-});
+    expect(out).toEqual(unsafeParse(String.raw`\y.t`).expr);
+  });
 
-test("capturing", () => {
-  const out = reductionStep(String.raw`(\x. (\t.t x)) t`);
+  test("capturing", () => {
+    const out = reductionStep(String.raw`(\x. (\t.t x)) t`);
 
-  expect(out).toMatchInlineSnapshot(`
-    {
-      "binding": "t'",
-      "body": {
-        "f": {
-          "name": "t",
-          "type": "var",
+    expect(out).toMatchInlineSnapshot(`
+      {
+        "binding": "t'",
+        "body": {
+          "f": {
+            "name": "t",
+            "type": "var",
+          },
+          "type": "appl",
+          "x": {
+            "name": "t'",
+            "type": "var",
+          },
         },
-        "type": "appl",
-        "x": {
-          "name": "t'",
-          "type": "var",
-        },
-      },
-      "type": "lambda",
-    }
-  `);
+        "type": "lambda",
+      }
+    `);
+  });
 });
 
 function reductionStep(src: string): LambdaExpr {

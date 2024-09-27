@@ -22,7 +22,7 @@ function getColors(color: Color): string {
 }
 
 export const Pre: FC<{ children: ReactNode }> = ({ children }) => (
-  <pre className="text-5xl text-zinc-800">{children}</pre>
+  <pre className="whitespace-pre-wrap text-5xl text-zinc-800">{children}</pre>
 );
 
 function getColorByIndex(index: number): Color {

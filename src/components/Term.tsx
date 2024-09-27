@@ -1,4 +1,4 @@
-import { FC, ReactNode, useState } from "react";
+import { FC } from "react";
 import { LambdaExpr } from "../lambda/ast";
 import { BetaReducibleTerm } from "./ReducibleTerm";
 import { performReduction } from "../lambda/semantics";
@@ -14,7 +14,10 @@ const chainBindings = (
   return [[expr.binding, ...bindings], body];
 };
 
-export const LambdaTerm: FC<{ expr: LambdaExpr }> = ({ expr }) => {
+export const LambdaTerm: FC<{
+  expr: LambdaExpr;
+  onReduction: (e: LambdaExpr) => void;
+}> = ({ expr, onReduction }) => {
   switch (expr.type) {
     case "var":
       return expr.name;
@@ -22,7 +25,23 @@ export const LambdaTerm: FC<{ expr: LambdaExpr }> = ({ expr }) => {
     case "lambda": {
       const [bindings, body] = chainBindings(expr);
       const bindingsJ = bindings.join(" ");
-      const bodyT = <LambdaTerm expr={body} />;
+      const bodyT = (
+        <LambdaTerm
+          expr={body}
+          onReduction={(body) => {
+            const uncurried = bindings.reduceRight(
+              (body, binding): LambdaExpr => ({
+                type: "lambda",
+                binding,
+                body,
+              }),
+              body,
+            );
+
+            onReduction(uncurried);
+          }}
+        />
+      );
 
       return (
         <>
@@ -34,12 +53,30 @@ export const LambdaTerm: FC<{ expr: LambdaExpr }> = ({ expr }) => {
     case "appl": {
       const f = optionalParens(
         expr.f.type === "lambda",
-        <LambdaTerm expr={expr.f} />,
+        <LambdaTerm
+          expr={expr.f}
+          onReduction={(f) => {
+            onReduction({
+              type: "appl",
+              x: expr.x,
+              f,
+            });
+          }}
+        />,
       );
 
       const x = optionalParens(
         expr.x.type !== "var",
-        <LambdaTerm expr={expr.x} />,
+        <LambdaTerm
+          expr={expr.x}
+          onReduction={(x) => {
+            onReduction({
+              type: "appl",
+              x,
+              f: expr.f,
+            });
+          }}
+        />,
       );
 
       const content = (
@@ -49,51 +86,21 @@ export const LambdaTerm: FC<{ expr: LambdaExpr }> = ({ expr }) => {
       );
 
       if (expr.f.type === "lambda") {
+        const f = expr.f;
         return (
-          <StatefulBetaReducibleTerm f={expr.f} arg={expr.x}>
+          <BetaReducibleTerm
+            onClick={() => {
+              const red = performReduction(f, expr.x);
+              onReduction(red);
+            }}
+          >
             {content}
-          </StatefulBetaReducibleTerm>
+          </BetaReducibleTerm>
         );
       }
 
       return content;
     }
-  }
-};
-
-type ReductionState =
-  | { type: "INITIAL"; f: LambdaExpr & { type: "lambda" }; arg: LambdaExpr }
-  | { type: "APPLIED"; result: LambdaExpr };
-
-const StatefulBetaReducibleTerm: FC<{
-  f: LambdaExpr & { type: "lambda" };
-  arg: LambdaExpr;
-  children: ReactNode;
-}> = ({ f, arg, children }) => {
-  const [state, setState] = useState<ReductionState>({
-    type: "INITIAL",
-    f,
-    arg,
-  });
-
-  switch (state.type) {
-    case "INITIAL": {
-      return (
-        <BetaReducibleTerm
-          onClick={() =>
-            setState({
-              type: "APPLIED",
-              result: performReduction(f, arg),
-            })
-          }
-        >
-          {children}
-        </BetaReducibleTerm>
-      );
-    }
-
-    case "APPLIED":
-      return <LambdaTerm expr={state.result} />;
   }
 };
 

@@ -1,14 +1,14 @@
-import { FC, ReactNode } from "react";
+import { createContext, FC, ReactNode, useContext } from "react";
 
-export type Color = "blue" | "red" | "lime" | "fuchsia" | "emerald";
+const colors = ["blue", "emerald", "fuchsia", "lime"] as const;
+export type Color = (typeof colors)[number];
+
+const ColorIdContext = createContext<number>(0);
 
 function getColors(color: Color): string {
   switch (color) {
     case "blue":
       return "bg-blue-50 hoverable-snippet__blue border-blue-400";
-
-    case "red":
-      return "bg-red-50 hoverable-snippet__red border-red-400";
 
     case "lime":
       return "bg-lime-50 hoverable-snippet__lime border-lime-400";
@@ -25,20 +25,31 @@ export const Pre: FC<{ children: ReactNode }> = ({ children }) => (
   <pre className="text-5xl text-zinc-800">{children}</pre>
 );
 
-export const BetaReducibleTerm: FC<{ children: ReactNode; color: Color }> = ({
+function getColorByIndex(index: number): Color {
+  return colors[index % colors.length];
+}
+
+export const BetaReducibleTerm: FC<{ children: ReactNode; color?: Color }> = ({
   children,
-  color,
-}) => (
-  <span className="inline-flex">
-    <span
-      className={`
+  color: defaultColor,
+}) => {
+  const thisId = useContext(ColorIdContext);
+
+  const color = defaultColor ?? getColorByIndex(thisId);
+  return (
+    <span className="inline-flex">
+      <span
+        className={`
         cursor-pointer hoverable-snippet
         rounded-xl pb-1.5 mb-1.5
         transitition-colors duration-100 ease-in-out
         border-b-4 ${getColors(color)}
       `}
-    >
-      {children}
+      >
+        <ColorIdContext.Provider value={thisId + 1}>
+          {children}
+        </ColorIdContext.Provider>
+      </span>
     </span>
-  </span>
-);
+  );
+};

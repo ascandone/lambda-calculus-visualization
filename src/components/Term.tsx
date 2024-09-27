@@ -5,7 +5,7 @@ import { BetaReducibleTerm } from "./ReducibleTerm";
 export const LambdaTerm: FC<{ expr: LambdaExpr }> = ({ expr }) => {
   switch (expr.type) {
     case "var":
-      return <>{expr.name}</>;
+      return expr.name;
 
     case "lambda": {
       const bindings = expr.bindings.join(" ");
@@ -36,7 +36,7 @@ export const LambdaTerm: FC<{ expr: LambdaExpr }> = ({ expr }) => {
       );
 
       if (expr.f.type === "lambda") {
-        return <BetaReducibleTerm color="blue">{content}</BetaReducibleTerm>;
+        return <BetaReducibleTerm>{content}</BetaReducibleTerm>;
       }
 
       return content;

@@ -1,14 +1,5 @@
 import classNames from "classnames";
-import {
-  createContext,
-  FC,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import { LambdaExpr, type Program as ProgramT } from "../lambda/ast";
-import { AliasesContext, LambdaTerm } from "./Term";
+import { createContext, FC, ReactNode, useContext, useState } from "react";
 
 const colors = ["blue", "emerald", "fuchsia", "lime"] as const;
 export type Color = (typeof colors)[number];
@@ -110,58 +101,5 @@ export const BetaReducibleTerm: FC<{
         </ColorIdContext.Provider>
       </span>
     </span>
-  );
-};
-
-function freshId() {
-  return Date.now().toString();
-}
-
-const Appear: FC<{ children: ReactNode; immediate?: boolean }> = ({
-  children,
-  immediate = false,
-}) => {
-  const [rendered, setRendered] = useState(immediate);
-
-  useEffect(() => {
-    requestAnimationFrame(() => {
-      setRendered(true);
-    });
-  }, []);
-
-  return (
-    <div
-      className={`transition-all duration-200 relative ease-in-out ${rendered ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-2"}`}
-    >
-      {children}
-    </div>
-  );
-};
-
-export const Program: FC<{ program: ProgramT }> = ({ program }) => {
-  const [terms, setTerms] = useState<[string, LambdaExpr][]>([
-    [freshId(), program.expr],
-  ]);
-
-  return (
-    <AliasesContext.Provider value={program.aliases}>
-      <div className="flex flex-col gap-y-14">
-        {terms.map(([id, term], index) => (
-          <Appear key={id} immediate={index === 0}>
-            <Pre>
-              <LambdaTerm
-                expr={term}
-                onReduction={(newExpr) => {
-                  setTerms([
-                    ...terms.slice(0, index + 1),
-                    [freshId(), newExpr],
-                  ]);
-                }}
-              />
-            </Pre>
-          </Appear>
-        ))}
-      </div>
-    </AliasesContext.Provider>
   );
 };

@@ -1,7 +1,8 @@
 import { FC, useCallback, useEffect, useState } from "react";
-import { BetaReducibleTerm, Program } from "./components/ReducibleTerm";
+import { BetaReducibleTerm } from "./components/ReducibleTerm";
 import { Editor, EditorProps } from "./components/Editor";
 import { type Program as ProgramT } from "./lambda/ast";
+import { Program } from "./components/Term";
 
 const useRouter = () => {
   // hack to re-render the component

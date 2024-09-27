@@ -75,11 +75,17 @@ export const LambdaTerm: FC<{
 
       function handleClick() {
         const red = unalias(aliases, expr);
+        setGlobalSelection(id);
         onReduction(red);
       }
 
       return (
-        <BetaReducibleTerm onClick={handleClick}>{expr.name}</BetaReducibleTerm>
+        <BetaReducibleTerm
+          selectionState={selectionState}
+          onClick={handleClick}
+        >
+          {expr.name}
+        </BetaReducibleTerm>
       );
     }
 

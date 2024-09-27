@@ -29,15 +29,22 @@ function getColorByIndex(index: number): Color {
   return colors[index % colors.length];
 }
 
-export const BetaReducibleTerm: FC<{ children: ReactNode; color?: Color }> = ({
-  children,
-  color: defaultColor,
-}) => {
+export const BetaReducibleTerm: FC<{
+  children: ReactNode;
+  color?: Color;
+  onClick?: VoidFunction;
+}> = ({ children, color: defaultColor, onClick }) => {
   const thisId = useContext(ColorIdContext);
 
   const color = defaultColor ?? getColorByIndex(thisId);
   return (
-    <span className="inline-flex">
+    <span
+      className="inline-flex"
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick?.();
+      }}
+    >
       <span
         className={`
         cursor-pointer hoverable-snippet

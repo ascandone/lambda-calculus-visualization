@@ -8,7 +8,7 @@ Expr {
 
   Exp
     = "(" Appl ")"  -- paren
-    | "\\" ident+ "." Appl -- abs
+    | ("\\" | "λ") ident+ "." Appl -- abs
     | ident
 
   ident  (an identifier)

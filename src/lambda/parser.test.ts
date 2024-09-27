@@ -42,6 +42,22 @@ test("lambda", () => {
   });
 });
 
+test("lambda with greek char", () => {
+  const parsed = parse(String.raw`λx.x`);
+
+  expect(parsed).toEqual<ParseResult<LambdaExpr>>({
+    ok: true,
+    value: {
+      type: "lambda",
+      bindings: ["x"],
+      body: {
+        type: "var",
+        name: "x",
+      },
+    },
+  });
+});
+
 test("application", () => {
   const parsed = parse(`x y`);
 

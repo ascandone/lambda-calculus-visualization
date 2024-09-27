@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { performReduction } from "./semantics";
+import { performReduction, unalias } from "./semantics";
 import { unsafeParse } from "./parser";
 import { LambdaExpr } from "./ast";
 
@@ -52,3 +52,13 @@ function reductionStep(src: string): LambdaExpr {
   }
   return parsed;
 }
+
+describe("aliases substitution", () => {
+  test("substitute when found", () => {
+    const program = unsafeParse(String.raw`let A = a in \e . f A`);
+
+    expect(unalias(program)).toEqual<LambdaExpr>(
+      unsafeParse(String.raw`\e. f a`).expr,
+    );
+  });
+});

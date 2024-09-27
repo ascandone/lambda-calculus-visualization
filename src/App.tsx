@@ -2,6 +2,7 @@ import { FC, useState } from "react";
 import { BetaReducibleTerm, TermsList } from "./components/ReducibleTerm";
 import { Editor } from "./components/Editor";
 import { Program } from "./lambda/ast";
+import { unalias } from "./lambda/semantics";
 
 const App: FC = () => {
   const [program, setProgram] = useState<Program | undefined>(undefined);
@@ -11,7 +12,7 @@ const App: FC = () => {
   ) : (
     <div className="px-4 mx-auto w-full">
       <div className="mx-auto flex justify-center py-32">
-        <TermsList term={program.expr} />
+        <TermsList term={unalias(program)} />
       </div>
     </div>
   );

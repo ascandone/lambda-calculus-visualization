@@ -1,4 +1,4 @@
-import { LambdaExpr } from "./ast";
+import { LambdaExpr, Program } from "./ast";
 
 function substitute(
   binding: string,
@@ -53,4 +53,37 @@ export function performReduction(
   arg: LambdaExpr,
 ): LambdaExpr {
   return substitute(f.binding, arg, f.body);
+}
+
+export function unalias(program: Program): LambdaExpr {
+  function helper(expr: LambdaExpr): LambdaExpr {
+    switch (expr.type) {
+      case "var": {
+        const lookup = program.aliases.find(
+          (alias) => alias.name === expr.name,
+        );
+        if (lookup === undefined) {
+          return expr;
+        }
+        return lookup.value;
+      }
+
+      case "appl": {
+        return {
+          type: "appl",
+          f: helper(expr.f),
+          x: helper(expr.x),
+        };
+      }
+
+      case "lambda":
+        return {
+          type: "lambda",
+          binding: expr.binding,
+          body: helper(expr.body),
+        };
+    }
+  }
+
+  return helper(program.expr);
 }

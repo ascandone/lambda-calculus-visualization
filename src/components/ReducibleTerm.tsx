@@ -21,6 +21,10 @@ function getColors(color: Color): string {
   }
 }
 
+export const Pre: FC<{ children: ReactNode }> = ({ children }) => (
+  <pre className="text-5xl text-zinc-800">{children}</pre>
+);
+
 export const BetaReducibleTerm: FC<{ children: ReactNode; color?: Color }> = ({
   children,
   color,
@@ -29,17 +33,17 @@ export const BetaReducibleTerm: FC<{ children: ReactNode; color?: Color }> = ({
     color === undefined ? "" : `border-b-4 cursor-pointer ${getColors(color)}`;
 
   return (
-    <button className="inline-flex flex-col cursor-pointer">
-      <pre
+    <span className="inline-flex">
+      <span
         className={`
-            whitespace-pre text-5xl text-zinc-800 hoverable-snippet
-            rounded-xl pb-1.5 mb-1.5 w-full
-            transitition-colors duration-100 ease-in-out
-            ${coloring}
-        `}
+        cursor-pointer hoverable-snippet
+        rounded-xl pb-1.5 mb-1.5
+        transitition-colors duration-100 ease-in-out
+        ${coloring}
+      `}
       >
         {children}
-      </pre>
-    </button>
+      </span>
+    </span>
   );
 };

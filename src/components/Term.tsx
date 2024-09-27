@@ -19,6 +19,7 @@ import {
   SelectionState,
 } from "./ReducibleTerm";
 import {
+  autoreduce,
   containsBoundAliases,
   performReduction,
   unalias,
@@ -230,7 +231,7 @@ const Appear: FC<{ children: ReactNode; immediate?: boolean }> = ({
   );
 };
 
-const FAST_FORWARD_MAX_STEPS_NUMBER = 10;
+const FAST_FORWARD_MAX_STEPS_NUMBER = 12;
 
 export const Program: FC<{ program: ProgramT }> = ({ program }) => {
   const [terms, setTerms] = useState<[string, LambdaExpr][]>(() => [
@@ -248,9 +249,25 @@ export const Program: FC<{ program: ProgramT }> = ({ program }) => {
     alert("Not yet implemented");
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  function handleFastForward(_index: number) {
-    alert("Not yet implemented");
+  function handleFastForward(index: number, term: LambdaExpr) {
+    const newTerms = terms.slice(0, index + 1);
+
+    if (containsBoundAliases(program.aliases, term)) {
+      term = unalias(program.aliases, term);
+      newTerms.push([freshId(), term]);
+    }
+
+    for (let i = 0; i < FAST_FORWARD_MAX_STEPS_NUMBER; i++) {
+      const red = autoreduce(term);
+      if (red === undefined) {
+        break;
+      }
+
+      newTerms.push([freshId(), red]);
+      term = red;
+    }
+
+    setTerms(newTerms);
   }
 
   function handleDelete(index: number) {
@@ -280,7 +297,7 @@ export const Program: FC<{ program: ProgramT }> = ({ program }) => {
                 <MenuItem onClick={() => handleCanonicalize(index)}>
                   Canonicalize
                 </MenuItem>
-                <MenuItem onClick={() => handleFastForward(index)}>
+                <MenuItem onClick={() => handleFastForward(index, term)}>
                   Fast forward
                 </MenuItem>
                 <MenuItem

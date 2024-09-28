@@ -292,42 +292,55 @@ export const Program: FC<{ program: ProgramT }> = ({ program }) => {
   return (
     <AliasesContext.Provider value={program.aliases}>
       <div className="flex flex-col gap-y-14">
-        {terms.map(([id, term], index) => (
-          <div key={id} className="flex items-start gap-x-6">
-            <div className="my-2">
-              <MenuButton>
-                <MenuItem
-                  disabled={!containsBoundAliases(program.aliases, term)}
-                  onClick={() => handleSubstituteAliases(index, term)}
-                >
-                  Substitute all aliases
-                </MenuItem>
-                <MenuItem onClick={() => handleCanonicalize(index, term)}>
-                  Simplify bindings
-                </MenuItem>
-                <MenuItem onClick={() => handleFastForward(index, term)}>
-                  Fast forward
-                </MenuItem>
-                <MenuItem
-                  variant="danger"
-                  disabled={index === 0}
-                  onClick={() => handleDelete(index)}
-                >
-                  Delete step
-                </MenuItem>
-              </MenuButton>
-            </div>
+        {terms.map(([id, term], index) => {
+          const containsBoundAliases_ = containsBoundAliases(
+            program.aliases,
+            term,
+          );
 
-            <Appear>
-              <Pre>
-                <LambdaTerm
-                  expr={term}
-                  onReduction={(expr) => handleReduction(index, expr)}
-                />
-              </Pre>
-            </Appear>
-          </div>
-        ))}
+          const isReducible =
+            containsBoundAliases_ || autoreduce(term) !== undefined;
+
+          return (
+            <div key={id} className="flex items-start gap-x-6">
+              <div className="my-2">
+                <MenuButton>
+                  <MenuItem
+                    disabled={!containsBoundAliases_}
+                    onClick={() => handleSubstituteAliases(index, term)}
+                  >
+                    Substitute all aliases
+                  </MenuItem>
+                  <MenuItem onClick={() => handleCanonicalize(index, term)}>
+                    Simplify bindings
+                  </MenuItem>
+                  <MenuItem
+                    disabled={!isReducible}
+                    onClick={() => handleFastForward(index, term)}
+                  >
+                    Fast forward
+                  </MenuItem>
+                  <MenuItem
+                    variant="danger"
+                    disabled={index === 0}
+                    onClick={() => handleDelete(index)}
+                  >
+                    Delete step
+                  </MenuItem>
+                </MenuButton>
+              </div>
+
+              <Appear>
+                <Pre>
+                  <LambdaTerm
+                    expr={term}
+                    onReduction={(expr) => handleReduction(index, expr)}
+                  />
+                </Pre>
+              </Appear>
+            </div>
+          );
+        })}
       </div>
     </AliasesContext.Provider>
   );

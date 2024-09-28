@@ -7,10 +7,15 @@
     "dev": "vite",
     "build": "npm run generate:parser && tsc -b && vite build",
     "ts:w": "tsc -b --watch",
+    "ts:check": "tsc -b",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",
-    "generate:parser": "ohm generateBundles --esm --withTypes src/lambda/parser/grammar.ohm"
+    "test:run": "vitest run",
+    "generate:parser": "ohm generateBundles --esm --withTypes src/lambda/parser/grammar.ohm",
+    "format:check": "prettier --check --cache ./**/*.ts",
+    "format:write": "prettier --write --cache ./**/*.ts",
+    "linter:check": "eslint ."
   },
   "dependencies": {
     "@monaco-editor/react": "^4.6.0",

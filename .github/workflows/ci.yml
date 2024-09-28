@@ -1,0 +1,16 @@
+name: CI
+on: push
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+      - run: pnpm install
+      - run: pnpm format:check
+      - run: pnpm linter:check
+      - run: pnpm ts:check
+      - run: pnpm test:run

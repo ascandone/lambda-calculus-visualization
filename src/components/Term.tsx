@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useId,
+  useRef,
   useState,
 } from "react";
 import {
@@ -271,6 +272,8 @@ const StepRow: FC<{
     terms: (terms: [string, LambdaExpr][]) => [string, LambdaExpr][],
   ) => void;
 }> = memo(({ term, aliases, setTerms, index }) => {
+  const ref = useRef<HTMLPreElement | null>(null);
+
   function handleSubstituteAliases() {
     setTerms((terms) => {
       const previous = terms.slice(0, index);
@@ -318,6 +321,15 @@ const StepRow: FC<{
     setTerms((terms) => [...terms.slice(0, index + 1), [freshId(), newExpr]]);
   }
 
+  function handleCopyToClipboard() {
+    const content = ref.current?.textContent ?? undefined;
+    if (content === undefined) {
+      return;
+    }
+
+    navigator.clipboard.writeText(content);
+  }
+
   const containsBoundAliases_ = containsBoundAliases(aliases, term);
 
   const isReducible = containsBoundAliases_ || autoreduce(term) !== undefined;
@@ -336,6 +348,7 @@ const StepRow: FC<{
           <MenuItem disabled={!isReducible} onClick={handleFastForward}>
             Fast forward
           </MenuItem>
+          <MenuItem onClick={handleCopyToClipboard}>Copy to clipboard</MenuItem>
           <MenuItem
             variant="danger"
             disabled={index === 0}
@@ -347,7 +360,7 @@ const StepRow: FC<{
       </div>
 
       <Appear>
-        <Pre>
+        <Pre ref={ref}>
           <LambdaTerm
             expr={term}
             onReduction={(expr) => handleReduction(index, expr)}

@@ -1,5 +1,12 @@
 import classNames from "classnames";
-import { createContext, FC, ReactNode, useContext, useState } from "react";
+import {
+  createContext,
+  FC,
+  forwardRef,
+  ReactNode,
+  useContext,
+  useState,
+} from "react";
 
 const colors = ["blue", "emerald", "fuchsia", "amber"] as const;
 export type Color = (typeof colors)[number];
@@ -38,17 +45,18 @@ function getColors(color: Color, selectionState: SelectionState): string {
   }
 }
 
-export const Pre: FC<{ children: ReactNode }> = ({ children }) => {
+export type PreProps = { children: ReactNode };
+export const Pre = forwardRef<HTMLPreElement, PreProps>(({ children }, ref) => {
   const [selected, setSelected] = useState<string | undefined>(undefined);
 
   return (
     <GlobalSelectionContext.Provider value={[selected, setSelected]}>
-      <pre className="whitespace-pre-wrap text-4xl text-zinc-800">
+      <pre ref={ref} className="whitespace-pre-wrap text-4xl text-zinc-800">
         {children}
       </pre>
     </GlobalSelectionContext.Provider>
   );
-};
+});
 
 function getColorByIndex(index: number): Color {
   return colors[index % colors.length];

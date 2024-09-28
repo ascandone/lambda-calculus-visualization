@@ -1,6 +1,7 @@
 import {
   createContext,
   FC,
+  memo,
   ReactNode,
   useContext,
   useEffect,
@@ -245,103 +246,114 @@ export const Program: FC<{ program: ProgramT }> = ({ program }) => {
     });
   }, [terms]);
 
-  function handleSubstituteAliases(index: number, term: LambdaExpr) {
-    const previous = terms.slice(0, index);
-    const substitutedTerm = unalias(program.aliases, term);
-    setTerms([...previous, [freshId(), term], [freshId(), substitutedTerm]]);
-  }
-
-  function handleCanonicalize(index: number, term: LambdaExpr) {
-    const previous = terms.slice(0, index);
-    const canonical = canonicalize(term);
-    setTerms([...previous, [freshId(), canonical]]);
-  }
-
-  function handleFastForward(index: number, term: LambdaExpr) {
-    const newTerms = terms.slice(0, index + 1);
-
-    if (containsBoundAliases(program.aliases, term)) {
-      term = unalias(program.aliases, term);
-      newTerms.push([freshId(), term]);
-    }
-
-    for (let i = 0; i < FAST_FORWARD_MAX_STEPS_NUMBER; i++) {
-      const red = autoreduce(term);
-      if (red === undefined) {
-        break;
-      }
-
-      newTerms.push([freshId(), red]);
-      term = red;
-    }
-
-    setTerms(newTerms);
-  }
-
-  function handleDelete(index: number) {
-    if (index === 0) {
-      return;
-    }
-    setTerms(terms.slice(0, index));
-  }
-
-  function handleReduction(index: number, newExpr: LambdaExpr) {
-    setTerms([...terms.slice(0, index + 1), [freshId(), newExpr]]);
-  }
-
   return (
     <AliasesContext.Provider value={program.aliases}>
       <div className="flex flex-col gap-y-14">
-        {terms.map(([id, term], index) => {
-          const containsBoundAliases_ = containsBoundAliases(
-            program.aliases,
-            term,
-          );
-
-          const isReducible =
-            containsBoundAliases_ || autoreduce(term) !== undefined;
-
-          return (
-            <div key={id} className="flex items-start gap-x-6">
-              <div className="my-2">
-                <MenuButton>
-                  <MenuItem
-                    disabled={!containsBoundAliases_}
-                    onClick={() => handleSubstituteAliases(index, term)}
-                  >
-                    Substitute all aliases
-                  </MenuItem>
-                  <MenuItem onClick={() => handleCanonicalize(index, term)}>
-                    Simplify bindings
-                  </MenuItem>
-                  <MenuItem
-                    disabled={!isReducible}
-                    onClick={() => handleFastForward(index, term)}
-                  >
-                    Fast forward
-                  </MenuItem>
-                  <MenuItem
-                    variant="danger"
-                    disabled={index === 0}
-                    onClick={() => handleDelete(index)}
-                  >
-                    Delete step
-                  </MenuItem>
-                </MenuButton>
-              </div>
-
-              <Appear>
-                <Pre>
-                  <LambdaTerm
-                    expr={term}
-                    onReduction={(expr) => handleReduction(index, expr)}
-                  />
-                </Pre>
-              </Appear>
-            </div>
-          );
-        })}
+        {terms.map(([id, term], index) => (
+          <StepRow
+            key={id}
+            aliases={program.aliases}
+            index={index}
+            setTerms={setTerms}
+            term={term}
+          />
+        ))}
       </div>
     </AliasesContext.Provider>
   );
 };
+
+const StepRow: FC<{
+  term: LambdaExpr;
+  aliases: AliasDefinition[];
+  index: number;
+  setTerms: (
+    terms: (terms: [string, LambdaExpr][]) => [string, LambdaExpr][],
+  ) => void;
+}> = memo(({ term, aliases, setTerms, index }) => {
+  function handleSubstituteAliases() {
+    setTerms((terms) => {
+      const previous = terms.slice(0, index);
+      const substitutedTerm = unalias(aliases, term);
+      return [...previous, [freshId(), term], [freshId(), substitutedTerm]];
+    });
+  }
+
+  function handleCanonicalize() {
+    setTerms((terms) => {
+      const previous = terms.slice(0, index);
+      const canonical = canonicalize(term);
+      return [...previous, [freshId(), canonical]];
+    });
+  }
+
+  function handleFastForward() {
+    setTerms((terms) => {
+      const newTerms = terms.slice(0, index + 1);
+
+      if (containsBoundAliases(aliases, term)) {
+        term = unalias(aliases, term);
+        newTerms.push([freshId(), term]);
+      }
+
+      for (let i = 0; i < FAST_FORWARD_MAX_STEPS_NUMBER; i++) {
+        const red = autoreduce(term);
+        if (red === undefined) {
+          break;
+        }
+
+        newTerms.push([freshId(), red]);
+        term = red;
+      }
+
+      return newTerms;
+    });
+  }
+
+  function handleDelete() {
+    setTerms((terms) => terms.slice(0, index));
+  }
+
+  function handleReduction(index: number, newExpr: LambdaExpr) {
+    setTerms((terms) => [...terms.slice(0, index + 1), [freshId(), newExpr]]);
+  }
+
+  const containsBoundAliases_ = containsBoundAliases(aliases, term);
+
+  const isReducible = containsBoundAliases_ || autoreduce(term) !== undefined;
+
+  return (
+    <div className="flex items-start gap-x-6">
+      <div className="my-2">
+        <MenuButton>
+          <MenuItem
+            disabled={!containsBoundAliases_}
+            onClick={handleSubstituteAliases}
+          >
+            Substitute all aliases
+          </MenuItem>
+          <MenuItem onClick={handleCanonicalize}>Simplify bindings</MenuItem>
+          <MenuItem disabled={!isReducible} onClick={handleFastForward}>
+            Fast forward
+          </MenuItem>
+          <MenuItem
+            variant="danger"
+            disabled={index === 0}
+            onClick={handleDelete}
+          >
+            Delete step
+          </MenuItem>
+        </MenuButton>
+      </div>
+
+      <Appear>
+        <Pre>
+          <LambdaTerm
+            expr={term}
+            onReduction={(expr) => handleReduction(index, expr)}
+          />
+        </Pre>
+      </Appear>
+    </div>
+  );
+});

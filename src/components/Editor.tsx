@@ -68,7 +68,7 @@ export const Editor: FC<EditorProps> = ({
           bracketPairColorization: { enabled: false },
           scrollBeyondLastLine: false,
           overviewRulerBorder: false,
-          fontFamily: "Inconsolata",
+          fontFamily: "Noto sans mono",
           folding: true,
           guides: {
             indentation: false,

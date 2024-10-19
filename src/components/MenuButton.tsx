@@ -5,6 +5,10 @@ export type MenuButtonProps = {
   children: ReactNode;
 };
 
+export const Separator: FC = () => (
+  <DropdownMenu.Separator className="m-[5px] h-px bg-zinc-300" />
+);
+
 export const MenuButton: FC<MenuButtonProps> = ({ children }) => (
   <DropdownMenu.Root>
     <DropdownMenu.Trigger asChild>

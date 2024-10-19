@@ -25,9 +25,10 @@ import {
   canonicalize,
   containsBoundAliases,
   performReduction,
+  toSki,
   unalias,
 } from "../lambda/semantics";
-import { MenuButton, MenuItem } from "./MenuButton";
+import { MenuButton, MenuItem, Separator } from "./MenuButton";
 
 export const AliasesContext = createContext<AliasDefinition[]>([]);
 
@@ -313,6 +314,14 @@ const StepRow: FC<{
     });
   }
 
+  function handleExpressAsSki() {
+    setTerms((terms) => {
+      const previous = terms.slice(0, index);
+      const canonical = toSki(term);
+      return [...previous, [freshId(), canonical]];
+    });
+  }
+
   function handleDelete() {
     setTerms((terms) => terms.slice(0, index));
   }
@@ -338,6 +347,10 @@ const StepRow: FC<{
     <div className="flex items-start gap-x-6">
       <div className="my-2">
         <MenuButton>
+          <MenuItem disabled={!isReducible} onClick={handleFastForward}>
+            Fast forward
+          </MenuItem>
+
           <MenuItem
             disabled={!containsBoundAliases_}
             onClick={handleSubstituteAliases}
@@ -345,9 +358,13 @@ const StepRow: FC<{
             Substitute all aliases
           </MenuItem>
           <MenuItem onClick={handleCanonicalize}>Simplify bindings</MenuItem>
-          <MenuItem disabled={!isReducible} onClick={handleFastForward}>
-            Fast forward
+
+          <MenuItem onClick={handleExpressAsSki}>
+            Express as SKI combinators
           </MenuItem>
+
+          <Separator />
+
           <MenuItem onClick={handleCopyToClipboard}>Copy to clipboard</MenuItem>
           <MenuItem
             variant="danger"

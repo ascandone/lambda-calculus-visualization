@@ -30,6 +30,7 @@ const useRouter = () => {
 
 const DEFAULT_VALUE = String.raw`// Press cmd-Enter or ctrl-Enter to evaluate
 
+// variables must be separated by space
 // lambdas are written using the "\binding.body" syntax
 // "\x y.body" is sugar for "\x.\y.body"
 
@@ -38,6 +39,11 @@ let I t = t in // <- this is the same as "let I = \t . t"
 let S x y z = x z (y z) in
 let K u v = u in
 
+let B x y z = x (y z) in
+let C x y z = x y z in
+
+// this is the expression we are going to evaluate
+// edit this evaluate a different expression
 S (K S) K
 
 // source: https://github.com/ascandone/lambda-calculus-visualization

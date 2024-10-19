@@ -214,3 +214,92 @@ export function canonicalize(expr: LambdaExpr): LambdaExpr {
 
   return helper(expr);
 }
+
+const S: LambdaExpr = { type: "var", name: "S" },
+  K: LambdaExpr = { type: "var", name: "K" },
+  I: LambdaExpr = { type: "var", name: "I" },
+  B: LambdaExpr = { type: "var", name: "B" },
+  C: LambdaExpr = { type: "var", name: "C" };
+
+function toSkiRules(binding: string, body: LambdaExpr): LambdaExpr {
+  switch (body.type) {
+    case "lambda": {
+      const newBody = toSkiRules(body.binding, body.body);
+      return toSkiRules(binding, newBody);
+    }
+
+    case "var": {
+      if (body.name === binding) {
+        // rule 2
+        return I;
+      } else {
+        // rule 3
+        return { type: "appl", f: K, x: body };
+      }
+    }
+
+    case "appl": {
+      const l = isFree(binding, body.f);
+      const r = isFree(binding, body.x);
+
+      if (!l && r) {
+        // rule 1
+        if (body.x.type === "var") {
+          return body.f;
+        }
+
+        // rule 4
+        return {
+          type: "appl",
+          f: { type: "appl", f: B, x: body.f },
+          x: toSkiRules(binding, body.x),
+        };
+      }
+
+      if (l && !r) {
+        // rule 5
+        return {
+          type: "appl",
+          f: { type: "appl", f: C, x: toSkiRules(binding, body.f) },
+          x: body.x,
+        };
+      }
+
+      if (!l && !r) {
+        // rule 3
+        return { type: "appl", f: K, x: body };
+      }
+
+      if (l && r) {
+        return {
+          type: "appl",
+          f: {
+            type: "appl",
+            f: S,
+            x: toSkiRules(binding, body.f),
+          },
+          x: toSkiRules(binding, body.x),
+        };
+      }
+    }
+  }
+
+  return body;
+}
+
+export function toSki(expr: LambdaExpr): LambdaExpr {
+  switch (expr.type) {
+    case "var":
+      return expr;
+
+    case "appl":
+      return {
+        type: "appl",
+        f: toSki(expr.f),
+        x: toSki(expr.x),
+      };
+
+    case "lambda":
+      return toSkiRules(expr.binding, expr.body);
+  }
+}

@@ -6,6 +6,7 @@ import {
   idToChar,
   isFree,
   performReduction,
+  toSki,
   unalias,
 } from "./semantics";
 import { unsafeParse } from "./parser";
@@ -182,5 +183,66 @@ describe("canonicalize", () => {
     expect(canonicalize(program.expr)).toEqual<LambdaExpr>(
       unsafeParse(String.raw`\ c . c a b c`).expr,
     );
+  });
+});
+
+describe("toSki", () => {
+  test("rule 1", () => {
+    const program = unsafeParse(String.raw`\ x. y x`);
+    expect(toSki(program.expr)).toEqual(unsafeParse(`y`).expr);
+  });
+
+  test("rule 2", () => {
+    const program = unsafeParse(String.raw`\ x. x`);
+    expect(toSki(program.expr)).toEqual(unsafeParse(String.raw`I`).expr);
+  });
+
+  test("rule 3 with var", () => {
+    const program = unsafeParse(String.raw`\ x. y`);
+    expect(toSki(program.expr)).toEqual(unsafeParse(String.raw`K y`).expr);
+  });
+
+  test("rule 3 with appl", () => {
+    const program = unsafeParse(String.raw`\ x. a b`);
+    expect(toSki(program.expr)).toEqual(unsafeParse(String.raw`K (a b)`).expr);
+  });
+
+  test("rule 4", () => {
+    const program = unsafeParse(String.raw`\ x. a (x x)`);
+    expect(toSki(program.expr)).toEqual(
+      unsafeParse(String.raw`B a (S I I)`).expr,
+    );
+  });
+
+  test("rule 5", () => {
+    const program = unsafeParse(String.raw`\ x. (x x) a`);
+    expect(toSki(program.expr)).toEqual(unsafeParse(`C (S I I) a`).expr);
+  });
+
+  test("rule 6", () => {
+    const program = unsafeParse(String.raw`\ x. x x`);
+    expect(toSki(program.expr)).toEqual(unsafeParse(`S I I`).expr);
+  });
+
+  test("nested lambda", () => {
+    const program = unsafeParse(String.raw`\ x y. y`);
+    // \x. I
+    // K I
+    expect(toSki(program.expr)).toEqual(unsafeParse(`K I`).expr);
+  });
+
+  test("inner rules", () => {
+    const program = unsafeParse(String.raw`(\ x . x) (\ y . y)`);
+    expect(toSki(program.expr)).toEqual(unsafeParse(`I I`).expr);
+  });
+
+  test("free vars outside of lambda", () => {
+    const program = unsafeParse(String.raw`a b`);
+    expect(toSki(program.expr)).toEqual(unsafeParse(`a b`).expr);
+  });
+
+  test("complex expr", () => {
+    const program = unsafeParse(String.raw`(\ x y. y (x y)) (\ x y . t)`);
+    expect(toSki(program.expr)).toEqual(unsafeParse(`S I (K (K t))`).expr);
   });
 });

@@ -40,7 +40,7 @@ let S x y z = x z (y z) in
 let K u v = u in
 
 let B x y z = x (y z) in
-let C x y z = x y z in
+let C x y z = x z y in
 
 // this is the expression we are going to evaluate
 // edit this evaluate a different expression
